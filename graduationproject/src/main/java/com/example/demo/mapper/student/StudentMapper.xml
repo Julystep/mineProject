@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.student.StudentMapper">
+
+    <resultMap id="homeworkMap" type="com.example.demo.bean.Homework">
+        <id column="homework_id" property="id" />
+        <result column="title" property="title" />
+        <result column="main" property="main" />
+        <result column="sdate" property="sdate" />
+        <result column="edate" property="edate" />
+        <result column="state" property="state"/>
+        <result column="iscomment" property="iscomment" />
+        <result column="comment" property="comment" />
+        <result column="judge" property="judge" />
+    </resultMap>
+
+    <resultMap id="examinationMap" type="com.example.demo.bean.Examination">
+        <id column="examination_id" property="id" />
+        <result column="examination_title" property="examination_title" />
+        <result column="examination_main" property="examination_main" />
+        <result column="sdate"  property="sdate"  />
+        <result column="edate"  property="edate"  />
+        <result column="answer" property="answer" />
+        <result column="state"  property="state"  />
+    </resultMap>
+
+    <resultMap id="MajorMap" type="com.example.demo.bean.Major">
+        <result column="major_name" property="label"/>
+        <collection property="children" ofType="com.example.demo.bean.Grade" javaType="java.util.ArrayList">
+            <result column="grade_name" property="label"/>
+            <collection property="children" ofType="com.example.demo.bean.Sclass" javaType="java.util.ArrayList">
+                <id column="class_id" property="value"/>
+                <result column="class_name" property="label"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <!--获取学生作业和状态-->
+    <select id="getHomworkInfoAndState" resultMap="homeworkMap">
+        select h.title, h.main, h.sdate, h.edate, hs.* from homework_info h, homework_student hs where hs.student_id=#{studentID} and h.id=hs.homework_id and h.id in (select homework_id from homework_course_teacher where course_id=#{courseID})
+    </select>
+
+    <!--获取学生考试和状态-->
+    <select id="getExaminationInfoAndState" resultMap="examinationMap">
+        select e.examination_title, e.examination_main, e.sdate, e.edate, es.* from examination_info e, examination_student es where es.student_id = #{studentID} and e.id = es.examination_id and e.id in (select examination_id from examination_course_teacher where course_id=#{courseID})
+    </select>
+
+    <!--通过学生id获得班级id-->
+    <select id="getClassIdByStudentId" resultType="INT">
+        select sclass_id from student_info where sid=#{studentID}
+    </select>
+
+    <!--获取学生所学学科-->
+    <select id="getSubjectsByClassId" resultType="com.example.demo.bean.Course">
+        select c.* from course c, course_class cc where cc.class_id=#{classID} and cc.course_id=c.course_id
+    </select>
+
+    <!--获得学生专业年级班级和班级id-->
+    <select id="getMajorGradeClassByStudentId" resultMap="MajorMap">
+        select m.major_name, g.grade_name,c.class_name,c.class_id from major m, grade g, class c, student_info where sid=#{studentID} and sclass_id=c.class_id and c.grade_id=g.id and g.major_id=m.major_id
+    </select>
+
+    <!--上传学生作业-->
+    <update id="homeworkUpload">
+        update homework_student set url=#{path}, state=1 where student_id=#{id} and homework_id=#{homeworkID}
+    </update>
+
+    <!--存储学生的答案-->
+    <insert id="SubmitCode">
+        update examination_student set answer=#{answerStudent}, state=1 where student_id=#{studentID} and examination_id=#{examinationID}
+    </insert>
+
+
+</mapper>

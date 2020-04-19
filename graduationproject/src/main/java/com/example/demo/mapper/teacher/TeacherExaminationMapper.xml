@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.teacher.TeacherExaminationMapper">
+
+    <!--将考试信息存入数据库-->
+    <insert id="onSubmitExamination" keyProperty="examination.id" useGeneratedKeys="true">
+         insert examination_info(examination_title, examination_main, sdate, edate) values (#{examination.examination_title}, #{examination.examination_main}, #{examination.sdate}, #{examination.edate})
+    </insert>
+
+    <!--将考试和班级绑定-->
+    <insert id="setExaminationWithClass">
+        insert examination_class(examination_id, class_id)
+        values
+        <foreach collection="classIDList" item="item" separator ="," index="index">
+            (#{id}, #{item})
+        </foreach>
+    </insert>
+
+    <!--获得学生的信息-->
+    <select id="getSudentIdsByClasses" resultType="String">
+        select sid from student_info where sclass_id in (select class_id from examination_class where examination_id = #{id})
+    </select>
+
+    <!--将信息存储在表中-->
+    <insert id="setStudentInfoInExaminationClass">
+        insert examination_student(student_id, examination_id)
+        values
+        <foreach collection="studentID" item="item" separator ="," index="index">
+            (#{item}, #{id})
+        </foreach>
+    </insert>
+
+    <!--将作业和教师课程绑定-->
+    <insert id="setExaminationWithTeacherAndCourse">
+        insert examination_course_teacher(examination_id, course_id, teacher_id)
+        values
+        (#{id}, #{courseID}, #{teacherID})
+    </insert>
+
+</mapper>

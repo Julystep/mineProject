@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.teacher.TeacherCheckOnlineTestMapper">
+
+    <resultMap id="examinationMap" type="com.example.demo.bean.Examination">
+        <id column="id" property="id" />
+        <result column="examination_title" property="examination_title" />
+        <result column="examination_main" property="examination_main" />
+        <result column="sdate" property="sdate" />
+        <result column="edate" property="edate" />
+        <result column="state" property="state"/>
+        <collection property="children1" ofType="com.example.demo.bean.MGCBean" javaType="java.util.ArrayList">
+            <result column="class_id" property="class_id" />
+            <result column="class_name" property="class_name" />
+            <result column="grade_name" property="grade_name" />
+            <result column="major_name" property="major_name" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="OnlineTestClassMap" type="com.example.demo.bean.ClassStudentOnlineTest">
+        <result column="student_id" property="student_id" />
+        <result column="examination_id" property="examination_id" />
+        <result column="comment" property="comment"/>
+        <result column="sclass_id" property="sclass_id" />
+        <result column="major_name" property="major_name" />
+        <result column="grade_name" property="grade_name" />
+        <result column="class_name" property="class_name" />
+        <result column="username" property="student_name" />
+        <result column="state" property="state" />
+        <result column="iscomment" property="iscomment" />
+        <result column="examination_title" property="examination_name"/>
+        <result column="examination_main" property="examination_main"/>
+        <result column="answer" property="answer" />
+    </resultMap>
+
+
+    <!--获取考试们-->
+    <select id="getOnlineTestInfoByTeacherIdAndCourseId" resultMap="examinationMap">
+          select
+          h.*, c.*, g.*, m.*
+          from
+          examination_info h, examination_course_teacher hct, examination_class hc, class c, grade g, major m
+          where
+          hct.teacher_id=#{teacherID}
+          and
+          hct.course_id=#{courseID}
+          and
+          hct.examination_id=h.id
+          and
+          hc.examination_id=h.id
+          and
+          hc.class_id=c.class_id
+          and
+          c.grade_id=g.id
+          and
+          g.major_id=m.major_id
+    </select>
+
+    <!--获得单个作业的完成情况-->
+    <select id="getOnlineTestDetail" resultMap="OnlineTestClassMap">
+        select
+        hs.*, si.sclass_id, u.username, c.class_name, g.grade_name, m.major_name
+        from
+        examination_student hs, student_info si, class c, grade g, major m, user u
+        where
+        hs.examination_id=#{onlinetestID}
+        and
+        hs.student_id=si.sid
+        and
+        si.sclass_id=c.class_id
+        and
+        c.grade_id=g.id
+        and
+        g.major_id=m.major_id
+        and
+        si.sid=u.user_id
+        and
+        si.sclass_id in
+        <foreach collection="classList" separator="," open="(" close=")" index="index" item="item">
+            (#{item})
+        </foreach>
+        <if test="allChecked == false">
+            and state=#{stateChecked}
+            and iscomment=#{commentChecked}
+        </if>
+        <if test='studentInfo != null and studentInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{studentInfo},'%')
+        </if>
+        order by si.sclass_id, si.sid
+        limit #{page}, #{size}
+    </select>
+
+    <!--获得单个作业的数量-->
+    <select id="getOnlineTestCount" resultType="Int">
+        select
+        count(*)
+        from
+        examination_student hs, student_info si, class c, grade g, major m, user u
+        where
+        hs.examination_id=#{onlinetestID}
+        and
+        hs.student_id=si.sid
+        and
+        si.sclass_id=c.class_id
+        and
+        c.grade_id=g.id
+        and
+        g.major_id=m.major_id
+        and
+        si.sid=u.user_id
+        and
+        si.sclass_id in
+        <foreach collection="classList" separator="," open="(" close=")" index="index" item="item">
+            (#{item})
+        </foreach>
+        <if test="allChecked == false">
+            and state=#{stateChecked}
+            and iscomment=#{commentChecked}
+        </if>
+        <if test='studentInfo != null and studentInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{studentInfo},'%')
+        </if>
+    </select>
+
+    <select id="getSubmitCount" resultType="Int">
+        select count(*)
+        from examination_student hs, student_info si
+        where hs.examination_id=#{onlinetestID}
+        and hs.state=1
+        and  si.sid=hs.student_id
+        <if test='classList.size() != 0'>
+            and si.sclass_id in
+            <foreach collection="classList" separator="," open="(" close=")" index="index" item="item">
+                (#{item})
+            </foreach>
+        </if>
+        and hs.student_id=si.sid
+    </select>
+    <select id="getNoCheckedCount" resultType="Int">
+        select count(*)
+        from examination_student hs, student_info si
+        where hs.examination_id=#{onlinetestID}
+        and hs.state=1
+        and hs.iscomment=0
+        and  si.sid=hs.student_id
+        <if test='classList.size() != 0'>
+            and si.sclass_id in
+            <foreach collection="classList" separator="," open="(" close=")" index="index" item="item">
+                (#{item})
+            </foreach>
+        </if>
+        and hs.student_id=si.sid
+    </select>
+    <select id="getNoSubmitCount" resultType="Int">
+        select count(*)
+        from examination_student hs, student_info si
+        where hs.examination_id=#{onlinetestID}
+        and hs.state=0
+        and  si.sid=hs.student_id
+        <if test='classList.size() != 0'>
+            and si.sclass_id in
+            <foreach collection="classList" separator="," open="(" close=")" index="index" item="item">
+                (#{item})
+            </foreach>
+        </if>
+        and hs.student_id=si.sid
+    </select>
+
+    <update id="changeOnlineTestDate">
+        update examination_info set sdate=#{sdate}, edate=#{edate} where id=#{onlinetestID}
+    </update>
+
+    <!--彻底删除作业-->
+
+    <delete id="deleteOnlineTest">
+        delete from examination_info where id=#{onlinetestID}
+    </delete>
+
+    <update id="changeStudentexaminationScores">
+        update examination_student set answer=#{answer}
+            ,comment = #{commentValue}
+            ,iscomment = 1
+
+        where examination_id=#{homeworkID} and student_id=#{studentID}
+    </update>
+
+    <update id="changeExaminationComment">
+        update examination_student set comment=#{main} where examination_id=#{homeworkID} and student_id=#{studentID}
+    </update>
+
+
+</mapper>

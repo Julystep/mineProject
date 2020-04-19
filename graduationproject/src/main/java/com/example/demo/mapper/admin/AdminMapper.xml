@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.admin.AdminMapper">
+
+    <resultMap id="adminMap" type="com.example.demo.bean.Admin">
+        <result column="user_id" property="user_id" />
+        <result column="username" property="username" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="state" property="state" />
+        <result column="avatar" property="avatar" />
+        <collection property="majorList" ofType="com.example.demo.bean.Major" javaType="java.util.ArrayList">
+            <result column="major_id" property="major_id"/>
+            <result column="major_name" property="major_name"/>
+        </collection>
+    </resultMap>
+    <resultMap id="studentMap" type="com.example.demo.bean.Student">
+        <result column="user_id" property="user_id" />
+        <result column="username" property="username" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="class_id" property="class_id" />
+        <result column="class_name" property="class_name" />
+        <result column="id" property="grade_id" />
+        <result column="grade_name" property="grade_name" />
+        <result column="major_id" property="major_id" />
+        <result column="major_name" property="major_name" />
+    </resultMap>
+
+    <resultMap id="teacherMap" type="com.example.demo.bean.Teacher">
+        <result column="user_id" property="user_id" />
+        <result column="username" property="username" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="major_id" property="major_id" />
+        <result column="major_name" property="major_name" />
+    </resultMap>
+
+    <resultMap id="MajorMap" type="com.example.demo.bean.Major">
+        <result column="major_name" property="label"/>
+        <result column="major_id" property="value"></result>
+        <collection property="children" ofType="com.example.demo.bean.Grade" javaType="java.util.ArrayList">
+            <result column="grade_name" property="label"/>
+            <result column="id" property="value" />
+            <result column="major_id" property="major_id" />
+            <collection property="children" ofType="com.example.demo.bean.Sclass" javaType="java.util.ArrayList">
+                <id column="class_id" property="value"/>
+                <result column="class_name" property="label"/>
+                <result column="grade_id" property="grade_id" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="MajorMap1" type="com.example.demo.bean.Major">
+        <result column="major_name" property="label"/>
+        <result column="major_id" property="value"></result>
+        <collection property="children" ofType="com.example.demo.bean.Grade" javaType="java.util.ArrayList">
+            <result column="grade_name" property="label"/>
+            <result column="id" property="value" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="gradeMap" type="com.example.demo.bean.Grade">
+        <result column="grade_name" property="label"/>
+        <result column="id" property="value" />
+        <collection property="children" ofType="com.example.demo.bean.Sclass" javaType="java.util.ArrayList">
+            <id column="class_id" property="value"/>
+            <result column="class_name" property="label"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="CourseMap" type="com.example.demo.bean.Major">
+        <result column="major_name" property="label"/>
+        <result column="major_id" property="value" />
+        <collection property="childrencourse" ofType="com.example.demo.bean.Course" javaType="java.util.ArrayList">
+            <id column="course_id" property="value"/>
+            <result column="course_name" property="label"/>
+            <result column="major_id" property="major_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="getMajorID" resultMap="adminMap">
+        select u.user_id, u.username, u.email, u.phone, u.avatar, m.major_id, m.major_name from user u, admin_info ai, major m
+        where ai.aid = u.user_id and ai.major_id = m.major_id and u.user_id=#{userID}
+    </select>
+
+    <select id="getStudentByMajorIDCounts" resultType="INT">
+       select count(*)
+       from user u, major m, grade g, class c, student_info si
+       where u.user_id=si.sid and si.sclass_id=c.class_id and c.grade_id=g.id and g.major_id=m.major_id and m.major_id=#{majorID}
+       <if test="classIDList.size() != 0">
+           and c.class_id in
+           <foreach collection="classIDList" item="item" separator ="," index="index" open="(" close=")">
+               #{item}
+           </foreach>
+       </if>
+        <if test='studentInfo != null and studentInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{studentInfo},'%')
+        </if>
+    </select>
+    <select id="getTeacherByMajorIDCounts" resultType="Integer">
+        select count(*)
+        from user u, major m, teacher_info ti
+        where u.user_id=ti.tid and ti.tmajor_id=m.major_id and m.major_id=#{majorID}
+        <if test='teacherInfo != null and teacherInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{teacherInfo},'%')
+        </if>
+        order by m.major_id, u.user_id
+    </select>
+
+    <select id="getStudentByMajorID" resultMap="studentMap">
+        select u.user_id, u.username, u.email, u.phone,m.major_id, m.major_name,c.class_id, c.class_name,g.id, g.grade_name
+        from user u, major m, grade g, class c, student_info si
+        where u.user_id=si.sid and si.sclass_id=c.class_id and c.grade_id=g.id and g.major_id=m.major_id and m.major_id=#{majorID}
+        <if test="classIDList.size() != 0">
+            and c.class_id in
+            <foreach collection="classIDList" item="item" separator ="," index="index" open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test='studentInfo != null and studentInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{studentInfo},'%')
+        </if>
+        order by c.class_id, g.id, u.user_id
+        limit #{page}, #{size}
+    </select>
+    <select id="getTeacherByMajorID" resultMap="teacherMap">
+        select u.user_id, u.username, u.email, u.phone, m.major_name, m.major_id
+        from user u, major m, teacher_info ti
+        where u.user_id=ti.tid and ti.tmajor_id=m.major_id and m.major_id=#{majorID}
+        <if test='teacherInfo != null and teacherInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{teacherInfo},'%')
+        </if>
+        order by m.major_id, u.user_id
+        limit #{page}, #{size}
+    </select>
+
+    <select id="getClassesByMajorId" resultMap="MajorMap">
+        select c.class_id, c.class_name, c.grade_id, g.id,  g.grade_name, g.major_id, m.major_id, m.major_name from class c, grade g, major m
+        where m.major_id=#{majorID} and g.major_id=m.major_id and c.grade_id=g.id
+    </select>
+
+    <insert id="insertUser">
+        insert user(user_id, username, email, phone) values(#{student.user_id}, #{student.username}, #{student.email}, #{student.phone})
+    </insert>
+    <insert id="insertTUser">
+        insert user(user_id, username, email, phone) values(#{teacher.user_id}, #{teacher.username}, #{teacher.email}, #{teacher.phone})
+    </insert>
+    <insert id="userRole">
+        insert user_role (user_id, role_id) values (#{student.user_id}, 4)
+    </insert>
+    <insert id="userTRole">
+        insert user_role (user_id, role_id) values (#{teacher.user_id}, 3)
+    </insert>
+    <insert id="insertUser_info">
+        insert student_info (sid, sclass_id) values (#{student.user_id}, #{student.class_id})
+    </insert>
+    <insert id="insertTUser_info">
+        insert teacher_info (tid, tmajor_id) values (#{teacher.user_id}, #{teacher.major_id})
+    </insert>
+
+    <update id="updateUser">
+        update user set
+
+            username=#{student.username}
+
+        <if test="student.email != null">
+            , email=#{student.email}
+        </if>
+        <if test="student.phone != null">
+            , phone=#{student.phone}
+        </if>
+        where user_id=#{student.user_id}
+    </update>
+    <update id="updateTUser">
+        update user set
+
+            username=#{teacher.username}
+
+        <if test="teacher.email != null">
+            , email=#{teacher.email}
+        </if>
+        <if test="teacher.phone != null">
+            , phone=#{teacher.phone}
+        </if>
+        where user_id=#{teacher.user_id}
+    </update>
+    <update id="updateUser_info">
+        update student_info set sclass_id=#{student.class_id}
+        where sid=#{student.user_id}
+    </update>
+
+    <update id="updateTUser_info">
+        update teacher_info set tmajor_id=#{teacher.major_id}
+        where tid=#{teacher.user_id}
+    </update>
+
+    <delete id="deleteStudentInfoDetail">
+        delete from user where user_id=#{userID}
+    </delete>
+    <delete id="deleteTeacherInfoDetail">
+        delete from user where user_id=#{userID}
+    </delete>
+
+    <select id="getUserByUserID" resultType="com.example.demo.bean.Student">
+        select u.*, c.class_id from user u, student_info si, class c where u.user_id=si.sid and u.user_id=#{userID} and si.sclass_id=c.class_id;
+    </select>
+    <select id="getTeacherByUserID" resultType="com.example.demo.bean.Teacher">
+        select u.*, m.major_id from user u, teacher_info ti, major m where u.user_id=ti.tid and u.user_id=#{userID} and ti.tmajor_id=m.major_id;
+    </select>
+
+    <select id="getAllGrade" resultMap="MajorMap">
+
+        select m.major_id, m.major_name , g.id , g.grade_name, g.major_id, c.class_id, c.class_name, c.grade_id
+        from major m LEFT JOIN grade g on g.major_id=m.major_id
+        LEFT JOIN class c on c.grade_id=g.id
+        where m.major_id in
+        <foreach collection="majorList" item="item" separator ="," index="index" open="(" close=")">
+            #{item}
+        </foreach>
+        order by m.academy_id, m.major_name, g.grade_name, c.class_name
+    </select>
+
+    <select id="getAllCourse" resultMap="CourseMap">
+        select m.major_id, m.major_name, c.course_id, c.course_name
+        from major m left join course c on m.major_id=c.major_id
+        where m.major_id in
+        <foreach collection="list" item="item" separator ="," index="index" open="(" close=")">
+            #{item}
+        </foreach>
+        order by m.academy_id, m.major_name, c.course_id
+    </select>
+
+    <update id="updateGrade">
+        update grade set grade_name=#{label} where id=#{id}
+    </update>
+    <update id="updateClass">
+        update class set class_name=#{label} where class_id=#{id}
+    </update>
+    <update id="updateCourse">
+        update course set course_name=#{label} where course_id=#{id}
+    </update>
+    <delete id="deleteGrade">
+        delete from grade where id=#{grade_id}
+    </delete>
+    <delete id="deleteClass">
+        delete from class where class_id=#{class_id}
+    </delete>
+    <delete id="deleteCourse">
+        delete from course where course_id=#{course_id}
+    </delete>
+
+    <select id="getMajorAndGrade" resultMap="MajorMap1">
+        select m.major_id, m.major_name , g.id , g.grade_name
+        from major m left join grade g on g.major_id=m.major_id
+        where m.major_id in
+        <foreach collection="majorList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+        order by m.academy_id, m.major_name, g.grade_name
+    </select>
+    <insert id="insertGrade">
+        insert into grade(grade_name, major_id) values
+        <foreach collection="set" item="item" separator ="," index="index">
+            (#{item}, #{id})
+        </foreach>
+    </insert>
+    <insert id="insertClass">
+        insert into class(class_name, grade_id) values
+        <foreach collection="set" item="item" separator ="," index="index">
+            (#{item}, #{id})
+        </foreach>
+    </insert>
+    <insert id="insertCourse">
+        insert into course(course_name, major_id) values
+        <foreach collection="set" item="item" separator ="," index="index">
+            (#{item}, #{id})
+        </foreach>
+    </insert>
+    <select id="getAllGradeWithNone" resultType="com.example.demo.bean.Grade">
+        select * from grade
+    </select>
+    <select id="getAllClassWithNone" resultType="com.example.demo.bean.Sclass">
+        select * from class
+    </select>
+    <select id="getAllCourseWithNone" resultType="com.example.demo.bean.Course">
+        select * from course
+    </select>
+    <select id="getClassesById" resultType="com.example.demo.bean.Sclass">
+        select * from class where grade_id=#{grade_id}
+    </select>
+    <select id="getGradesById" resultType="com.example.demo.bean.Grade">
+        select * from grade where major_id=#{major_id}
+    </select>
+    <select id="getCoursesById" resultType="com.example.demo.bean.Course">
+        select * from course where major_id=#{major_id}
+    </select>
+    <select id="getClassIDByName" resultType="java.lang.String">
+        select c.class_id from class c, grade g, major m, academy a where c.class_name=#{student.class_name} and
+        g.grade_name=#{student.grade_name} and m.major_name=#{student.major_name} and a.academy_name=#{student.academy_name}
+        and c.grade_id = g.id and g.major_id = m.major_id and m.academy_id=a.academy_id
+    </select>
+    <insert id="importStudents" parameterType="java.util.List">
+        REPLACE into user(user_id, username, email, phone) values
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.user_id}, #{item.username}, #{item.email}, #{item.phone})
+        </foreach>
+    </insert>
+    <insert id="importStudentsInfo" parameterType="java.util.List">
+        REPLACE  into student_info(sid, sclass_id) values
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.user_id}, #{item.class_id})
+        </foreach>
+    </insert>
+    <insert id="importStudentsRole" parameterType="java.util.List">
+        REPLACE  into user_role(user_id, role_id) values
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.user_id}, 4)
+        </foreach>
+    </insert>
+    <select id="getMajorIDByName" resultType="java.lang.String">
+        select m.major_id from major m where m.major_name=#{teacher.major_name}
+    </select>
+    <insert id="importTeachers" parameterType="java.util.List">
+        REPLACE into user(user_id, username, email, phone) values
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.user_id}, #{item.username}, #{item.email}, #{item.phone})
+        </foreach>
+    </insert>
+    <insert id="importTeachersInfo" parameterType="java.util.List">
+        REPLACE into teacher_info(tid, tmajor_id) values
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.user_id}, #{item.major_id})
+        </foreach>
+    </insert>
+    <insert id="importTeachersRole" parameterType="java.util.List">
+        REPLACE  into user_role(user_id, role_id) values
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.user_id}, 3)
+        </foreach>
+    </insert>
+
+
+</mapper>

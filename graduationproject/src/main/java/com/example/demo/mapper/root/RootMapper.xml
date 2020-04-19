@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.root.RootMapper">
+
+    <resultMap id="adminMap" type="com.example.demo.bean.Admin">
+        <result column="user_id" property="user_id" />
+        <result column="username" property="username" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="state" property="state" />
+        <result column="avatar" property="avatar" />
+        <collection property="majorList" ofType="com.example.demo.bean.Major" javaType="java.util.ArrayList">
+            <result column="major_id" property="major_id"/>
+            <result column="major_name" property="major_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="AcademyMap" type="com.example.demo.bean.Academy">
+        <result column="academy_name" property="label"/>
+        <result column="academy_id" property="value" />
+        <collection property="children" ofType="com.example.demo.bean.Major" javaType="java.util.ArrayList">
+            <result column="major_name" property="label"/>
+            <result column="major_id" property="value" />
+        </collection>
+    </resultMap>
+
+    <select id="getSecondaryAdministrator" resultMap="adminMap">
+        select u.user_id, u.username, u.email, u.phone, u.avatar, m.major_id, m.major_name from user u, admin_info ai, major m
+        where ai.aid = u.user_id and ai.major_id = m.major_id
+        <if test='userInfo != null and userInfo != ""'>
+            and concat(u.user_id, u.username) LIKE CONCAT ('%', #{userInfo},'%')
+        </if>
+        order by u.user_id
+    </select>
+
+    <select id="getAllMajor" resultMap="AcademyMap">
+        select a.academy_id, a.academy_name, m.major_id, m.major_name from academy a
+        left join major m
+        on m.academy_id=a.academy_id
+    </select>
+    <select id="getAllAcademy" resultType="String">
+        select academy_name from academy
+    </select>
+    <select id="getAllAcademy1" resultType="com.example.demo.bean.Academy">
+        select * from academy
+    </select>
+
+    <insert id="insertAdmin">
+        insert user(user_id, username, email, phone) values (#{admin.user_id}, #{admin.username}, #{admin.email}, #{admin.phone})
+    </insert>
+
+    <insert id="insertRole">
+        insert user_role(user_id, role_id) values (#{admin.user_id}, 2)
+    </insert>
+
+    <insert id="insertAdmin_info">
+        insert into admin_info(aid, major_id) values
+        <foreach collection="majorList" item="item" separator ="," index="index">
+            (#{admin.user_id}, #{item})
+        </foreach>
+    </insert>
+
+    <!--用于删除二级管理员表中的数据-->
+    <delete id="deleteMajor">
+        delete from admin_info where aid = #{user_id}
+    </delete>
+    <!--用于删除真正的专业-->
+    <delete id="deleteMajor1">
+        delete from major where major_id=#{majorID}
+    </delete>
+
+    <delete id="deleteAdmin">
+        delete from user where user_id = #{user_id}
+    </delete>
+
+    <select id="getAllID" resultType="String">
+        select user_id from user
+    </select>
+
+    <insert id="createAcamedy">
+        insert into academy(academy_name) values
+        <foreach collection="list" item="item" separator ="," index="index">
+            (#{item})
+        </foreach>
+
+    </insert>
+
+    <delete id="deleteAcademy">
+        delete from academy where academy_id=#{academyID}
+    </delete>
+
+    <update id="updateAcademyname">
+        update academy set academy_name=#{academy_name} where academy_id=#{academy_id}
+    </update>
+
+    <insert id="createMajor">
+        insert into major(major_name, academy_id) values
+        <foreach collection="set" item="item" separator ="," index="index">
+            (#{item}, #{academy_id})
+        </foreach>
+    </insert>
+
+    <update id="updateMajorname">
+        update major set major_name=#{major_name} where major_id=#{major_id}
+    </update>
+
+</mapper>

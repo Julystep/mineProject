@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.teacher.TeacherHomeworkMapper">
+    <resultMap id="homeworkMap" type="com.example.demo.bean.Homework">
+        <id column="id" property="id" />
+        <result column="title" property="title"/>
+        <result column="main" property="main"/>
+        <result column="sdate" property="sdate"/>
+        <result column="edate" property="edate"/>
+        <result column="class_id" property="class_id"/>
+        <result column="teacher_id" property="teacher_id"/>
+    </resultMap>
+
+    <resultMap id="MajorMap" type="com.example.demo.bean.Major">
+        <result column="major_name" property="label"/>
+        <collection property="children" ofType="com.example.demo.bean.Grade" javaType="java.util.ArrayList">
+            <result column="grade_name" property="label"/>
+            <collection property="children" ofType="com.example.demo.bean.Sclass" javaType="java.util.ArrayList">
+                <id column="class_id" property="value"/>
+                <result column="class_name" property="label"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="AcademyMap" type="com.example.demo.bean.Academy">
+        <result column="academy_name" property="label"/>
+        <collection property="children" ofType="com.example.demo.bean.Major" javaType="java.util.ArrayList">
+            <result column="major_name" property="label"/>
+            <collection property="children" ofType="com.example.demo.bean.Grade" javaType="java.util.ArrayList">
+                <result column="grade_name" property="label"/>
+                <collection property="children" ofType="com.example.demo.bean.Sclass" javaType="java.util.ArrayList">
+                    <result column="class_name" property="value"/>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--通过教师id获得教师所教课程-->
+    <select id="getSubjectsByTeacherId" resultType="com.example.demo.bean.Course">
+        select c.* from course c, course_teacher cc where cc.teacher_id=#{teacherID} and cc.course_id=c.course_id
+    </select>
+
+    <!--根据resultmap获取信息-->
+    <select id="getClassesByCourseId2" resultMap="MajorMap">
+        select m.major_name, g.grade_name,c.class_name,c.class_id from major m, grade g, class c,  course_class where course_class.course_id=#{course_id} and c.class_id=course_class.class_id and c.grade_id=g.id and g.major_id=m.major_id
+    </select>
+
+    <!--将作业信息存入数据库-->
+    <insert id="onSubmitHomework" keyProperty="homework.id" useGeneratedKeys="true" >
+        insert homework_info(title, main, sdate, edate, judge) values(#{homework.title}, #{homework.main}, #{homework.sdate}, #{homework.edate}, #{homework.judge})
+    </insert>
+
+    <!--将作业和班级绑定-->
+    <insert id="setHomeworkWithClass">
+        insert homework_class(homework_id, class_id)
+        values 
+        <foreach collection="classIDList" item="item" separator ="," index="index">
+        (#{homeworkID}, #{item})
+        </foreach>
+    </insert>
+    <!--将作业和教师课程绑定-->
+    <insert id="setHomeworkWithTeacherAndCourse">
+        insert homework_course_teacher(homework_id, course_id, teacher_id)
+        values
+        (#{homeworkID}, #{courseID}, #{teacherID})
+    </insert>
+
+    <!--获得学生的信息-->
+    <select id="getSudentIdsByClasses" resultType="String">
+        select sid from student_info where sclass_id in (select class_id from homework_class where homework_id = #{homeworkID})
+    </select>
+
+    <!--将信息存储在表中-->
+    <insert id="setStudentInfoInHomeworkClass">
+        insert homework_student(student_id, homework_id)
+        values
+        <foreach collection="studentID" item="item" separator ="," index="index">
+            (#{item}, #{homeworkID})
+        </foreach>
+    </insert>
+
+
+</mapper>
