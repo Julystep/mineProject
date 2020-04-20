@@ -551,4 +551,63 @@ public class AdminService {
         }
 
     }
+
+    public Map<String, Object> getClassAndTeacherByMajorlist(String majorList) {
+
+        Map<String, Object> map = new HashMap<>();
+        JSONArray jsonArray = JSON.parseArray(majorList);
+        List<Integer> list = new ArrayList<>();
+        for(int i = 0; i < jsonArray.size(); i++){
+            list.add(JSON.parseObject(jsonArray.getString(i)).getInteger("major_id"));
+        }
+        List<Major> majors = adminMapper.getClassByMajorList(list);
+        List<Major> teachers = adminMapper.getAllteachers();
+        map.put("majors", majors);
+        map.put("teachers", teachers);
+        return map;
+    }
+
+    public boolean submitClassAndTeacher(String form) {
+
+        JSONObject jsonObject = JSON.parseObject(form);
+
+        int course_id = jsonObject.getInteger("course_id");
+
+        List<Integer> classList = new ArrayList<>();
+
+        JSONArray jsonArray = jsonObject.getJSONArray("classValue");
+        for(int i = 0; i < jsonArray.size(); i++){
+            if(adminMapper.testClassAndCourse(jsonArray.getJSONArray(i).getInteger(2), course_id)){
+                continue;
+            }
+            classList.add(jsonArray.getJSONArray(i).getInteger(2));
+        }
+
+
+        JSONArray jsonArray1 = jsonObject.getJSONArray("teacher_id");
+
+        String teacher_id = jsonArray1.getString(1);
+
+        if(adminMapper.testTeacherAndCourse(teacher_id, course_id)){
+            if(classList.size() == 0){
+                return true;
+            }
+            return adminMapper.insertCourseAndClass(classList, course_id);
+        }else{
+            return adminMapper.insertCourseAndClass(classList, course_id) &&
+                    adminMapper.insertCourseAndTeacher(teacher_id, course_id);
+        }
+
+    }
+
+    public Map<String, Object> getClassesAndTeacher(int course_id) {
+
+        List<MGCBean> mgcBeans = adminMapper.getClasses(course_id);
+        Teacher teacher = adminMapper.getTeacher(course_id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("mgcBeans", mgcBeans);
+        map.put("teacher", teacher);
+        return map;
+
+    }
 }

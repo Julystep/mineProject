@@ -278,6 +278,28 @@ public class AdminController {
 
     }
 
+    @RequestMapping(value = "/getclassandteacherbymajorlist", method = RequestMethod.POST)
+    public Map<String, Object> getClassAndTeacherByMajorlist(@RequestParam("majorList") String majorList){
+
+        return adminService.getClassAndTeacherByMajorlist(majorList);
+
+    }
+
+    @RequestMapping(value = "/submitclassandteacher", method = RequestMethod.POST)
+    public RespBean submitClassAndTeacher(@RequestParam("form") String form){
+
+        if(adminService.submitClassAndTeacher(form)){
+            return RespBean.ok("成功");
+        }else{
+            return RespBean.error("失败");
+        }
+
+    }
+
+    @RequestMapping(value = "/getclassesandteacher", method = RequestMethod.GET)
+    public Map<String, Object> getClassesAndTeacher(@RequestParam("course_id") int course_id){
+        return adminService.getClassesAndTeacher(course_id);
+    }
 
 
 

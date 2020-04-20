@@ -102,4 +102,20 @@ public interface AdminMapper {
     List<Course> getAllCourseWithNone();
 
     boolean insertCourse(int id, Set<String> set);
+
+    List<Major> getClassByMajorList(List<Integer> list);
+
+    List<Major> getAllteachers();
+
+    boolean insertCourseAndClass(@Param("classList") List<Integer> classList, int course_id);
+
+    boolean insertCourseAndTeacher(String teacher_id, int course_id);
+
+    boolean testClassAndCourse(Integer integer, int course_id);
+
+    boolean testTeacherAndCourse(String teacher_id, int course_id);
+
+    List<MGCBean> getClasses(int course_id);
+
+    Teacher getTeacher(int course_id);
 }

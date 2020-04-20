@@ -62,6 +62,15 @@
         </collection>
     </resultMap>
 
+    <resultMap id="MajorMap2" type="com.example.demo.bean.MajorTeacher">
+        <result column="major_name" property="label"/>
+        <result column="major_id" property="value"></result>
+        <collection property="children" ofType="com.example.demo.bean.User" javaType="java.util.ArrayList">
+            <result column="username" property="label"/>
+            <result column="user_id" property="value" />
+        </collection>
+    </resultMap>
+
     <resultMap id="gradeMap" type="com.example.demo.bean.Grade">
         <result column="grade_name" property="label"/>
         <result column="id" property="value" />
@@ -341,6 +350,42 @@
             (#{item.user_id}, 3)
         </foreach>
     </insert>
+    <select id="getClassByMajorList" resultMap="MajorMap">
+        select c.class_id, c.class_name, c.grade_id, g.id,  g.grade_name, g.major_id, m.major_id, m.major_name from class c, grade g, major m
+        where g.major_id=m.major_id and c.grade_id=g.id and
+        m.major_id in
+        <foreach collection="list" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
+        order by m.major_name, g.grade_name, c.class_name
+    </select>
+    <select id="getAllteachers" resultMap="MajorMap2">
+        select m.major_id, m.major_name, u.user_id, u.username from major m, user u, teacher_info ti
+        where m.major_id = ti.tmajor_id and ti.tid = u.user_id
+    </select>
+    <insert id="insertCourseAndClass">
+        insert into course_class(course_id, class_id) values
+        <foreach collection="classList" separator=","  item="item">
+            (#{course_id}, #{item})
+        </foreach>
+    </insert>
+    <insert id="insertCourseAndTeacher">
+        insert into course_teacher(course_id, teacher_id) values (#{course_id}, #{teacher_id})
+    </insert>
+    <select id="testClassAndCourse" resultType="java.lang.Boolean">
+        select COUNT(*) from course_class where course_id=#{course_id} and class_id=#{integer}
+    </select>
+    <select id="testTeacherAndCourse" resultType="java.lang.Boolean">
+        select COUNT(*) from course_teacher where course_id=#{course_id} and teacher_id=#{teacher_id}
+    </select>
+    <select id="getClasses" resultType="com.example.demo.bean.MGCBean">
+        select c.class_name, g.grade_name, m.major_name from course_class cc, class c, major m, grade g
+        where cc.class_id = c.class_id and c.grade_id=g.id and g.major_id=m.major_id and cc.course_id=#{course_id}
+    </select>
+    <select id="getTeacher" resultType="com.example.demo.bean.Teacher">
+        select u.user_id, u.username, m.major_id from user u, teacher_info ti, major m, course_teacher ct
+        where ct.course_id=#{course_id} and ct.teacher_id=u.user_id and u.user_id=ti.tid and ti.tmajor_id=m.major_id
+    </select>
 
 
 </mapper>

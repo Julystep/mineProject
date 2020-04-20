@@ -318,7 +318,6 @@ export default {
       }).then(resp => {
         _this.teacherInfo = resp.data
         _this.majorList = _this.$store.state.admin.majorList
-        console.log(resp.data)
       })
     },
     getChange (activeName) {

@@ -11,7 +11,7 @@
  Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 17/04/2020 16:28:27
+ Date: 20/04/2020 08:46:04
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `academy`  (
   `academy_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '学院id',
   `academy_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '学院名称',
   PRIMARY KEY (`academy_id`, `academy_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of academy
@@ -49,7 +49,7 @@ CREATE TABLE `admin_info`  (
   INDEX `majorID`(`major_id`) USING BTREE,
   CONSTRAINT `majorID` FOREIGN KEY (`major_id`) REFERENCES `major` (`major_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `userID` FOREIGN KEY (`aid`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of admin_info
@@ -75,7 +75,7 @@ CREATE TABLE `class`  (
   INDEX `class_id`(`class_id`) USING BTREE,
   INDEX `grade_id`(`grade_id`) USING BTREE,
   CONSTRAINT `grade_id` FOREIGN KEY (`grade_id`) REFERENCES `grade` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of class
@@ -96,16 +96,20 @@ INSERT INTO `class` VALUES (14, '1班', 11);
 -- ----------------------------
 DROP TABLE IF EXISTS `course`;
 CREATE TABLE `course`  (
-  `course_id` int(11) NOT NULL COMMENT '课程id',
+  `course_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '课程id',
   `course_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '课程名称',
-  PRIMARY KEY (`course_id`) USING BTREE
+  `major_id` int(11) NOT NULL COMMENT '专业名称',
+  PRIMARY KEY (`course_id`) USING BTREE,
+  INDEX `major_id222`(`major_id`) USING BTREE,
+  CONSTRAINT `major_id222` FOREIGN KEY (`major_id`) REFERENCES `major` (`major_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of course
 -- ----------------------------
-INSERT INTO `course` VALUES (1, 'java程序设计与开发');
-INSERT INTO `course` VALUES (2, '计算机组成基础');
+INSERT INTO `course` VALUES (1, 'java程序设计与开发', 1);
+INSERT INTO `course` VALUES (2, '计算机组成基础123', 1);
+INSERT INTO `course` VALUES (3, 'c++面向对象', 9);
 
 -- ----------------------------
 -- Table structure for course_class
@@ -113,14 +117,14 @@ INSERT INTO `course` VALUES (2, '计算机组成基础');
 DROP TABLE IF EXISTS `course_class`;
 CREATE TABLE `course_class`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `course_id` int(11) NOT NULL COMMENT '课程名称',
+  `course_id` int(11) NOT NULL,
   `class_id` int(11) NOT NULL COMMENT '班级名称',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `course_id`(`course_id`) USING BTREE,
   INDEX `class_id3`(`class_id`) USING BTREE,
+  INDEX `course_id1`(`course_id`) USING BTREE,
   CONSTRAINT `class_id3` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `course_id` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  CONSTRAINT `course_id1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of course_class
@@ -136,11 +140,11 @@ CREATE TABLE `course_teacher`  (
   `course_id` int(11) NOT NULL COMMENT '课程id',
   `teacher_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '教师id',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `course_id1`(`course_id`) USING BTREE,
   INDEX `teacher_id3`(`teacher_id`) USING BTREE,
-  CONSTRAINT `course_id1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX `course_id2`(`course_id`) USING BTREE,
+  CONSTRAINT `course_id2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `teacher_id3` FOREIGN KEY (`teacher_id`) REFERENCES `teacher_info` (`tid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of course_teacher
@@ -185,7 +189,7 @@ CREATE TABLE `examination_course_teacher`  (
   CONSTRAINT `course_id5` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `examination_id` FOREIGN KEY (`examination_id`) REFERENCES `examination_info` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `teacher_id5` FOREIGN KEY (`teacher_id`) REFERENCES `teacher_info` (`tid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of examination_course_teacher
@@ -249,7 +253,7 @@ CREATE TABLE `grade`  (
   INDEX `id`(`id`, `grade_name`, `major_id`) USING BTREE,
   INDEX `major_id`(`major_id`) USING BTREE,
   CONSTRAINT `major_id` FOREIGN KEY (`major_id`) REFERENCES `major` (`major_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of grade
@@ -294,13 +298,13 @@ CREATE TABLE `homework_course_teacher`  (
   `course_id` int(11) NOT NULL COMMENT '课程id',
   `teacher_id` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '教师id',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `course_id2`(`course_id`) USING BTREE,
   INDEX `homework_id3`(`homework_id`) USING BTREE,
   INDEX `teacher_id`(`teacher_id`) USING BTREE,
-  CONSTRAINT `course_id2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX `course_id4`(`course_id`) USING BTREE,
+  CONSTRAINT `course_id4` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `homework_id3` FOREIGN KEY (`homework_id`) REFERENCES `homework_info` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `teacher_id` FOREIGN KEY (`teacher_id`) REFERENCES `teacher_info` (`tid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of homework_course_teacher
@@ -373,7 +377,7 @@ CREATE TABLE `major`  (
   INDEX `major_id`(`major_id`) USING BTREE,
   INDEX `academy_id`(`academy_id`) USING BTREE,
   CONSTRAINT `academy_id` FOREIGN KEY (`academy_id`) REFERENCES `academy` (`academy_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of major
@@ -475,20 +479,23 @@ CREATE TABLE `student_info`  (
   `id` bigint(255) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `sid` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '学生id',
   `sclass_id` int(11) NOT NULL COMMENT '学生班级id',
-  PRIMARY KEY (`id`) USING BTREE,
+  PRIMARY KEY (`id`, `sid`, `sclass_id`) USING BTREE,
   INDEX `sid`(`sid`) USING BTREE,
   INDEX `class_id`(`sclass_id`) USING BTREE,
   CONSTRAINT `class_id` FOREIGN KEY (`sclass_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `sid` FOREIGN KEY (`sid`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of student_info
 -- ----------------------------
 INSERT INTO `student_info` VALUES (1, '16011', 1);
 INSERT INTO `student_info` VALUES (2, '16012', 1);
+INSERT INTO `student_info` VALUES (12, '160405201', 1);
 INSERT INTO `student_info` VALUES (3, '16013', 2);
 INSERT INTO `student_info` VALUES (4, '16033', 9);
+INSERT INTO `student_info` VALUES (13, '160405202', 13);
+INSERT INTO `student_info` VALUES (14, '160405203', 15);
 
 -- ----------------------------
 -- Table structure for teacher_info
@@ -503,7 +510,7 @@ CREATE TABLE `teacher_info`  (
   INDEX `tmajor_id`(`tmajor_id`) USING BTREE,
   CONSTRAINT `tid` FOREIGN KEY (`tid`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tmajor_id` FOREIGN KEY (`tmajor_id`) REFERENCES `major` (`major_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of teacher_info
@@ -526,17 +533,20 @@ CREATE TABLE `user`  (
   INDEX `id`(`id`) USING BTREE,
   INDEX `user_id`(`user_id`) USING BTREE,
   INDEX `username`(`username`) USING BTREE COMMENT '通过username加快查询'
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES (1, '11111', 'root', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, NULL, NULL);
-INSERT INTO `user` VALUES (2, '12345', 'teacher1', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, NULL, NULL);
-INSERT INTO `user` VALUES (3, '16011', 'student138', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, NULL, NULL);
+INSERT INTO `user` VALUES (2, '12345', 'teacher1', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '957904176@qq.com', '18842573965');
+INSERT INTO `user` VALUES (3, '16011', 'student138', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '957904176@qq.com', '18842573965');
 INSERT INTO `user` VALUES (4, '16012', 'student2', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, NULL, NULL);
 INSERT INTO `user` VALUES (5, '16013', 'student381', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, NULL, NULL);
 INSERT INTO `user` VALUES (6, '16033', 'student4', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, NULL, NULL);
+INSERT INTO `user` VALUES (35, '160405201', 'student9', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '4785@qq.com', '14857894562');
+INSERT INTO `user` VALUES (36, '160405202', 'student8', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '4845@qq.com', '15857894563');
+INSERT INTO `user` VALUES (37, '160405203', 'student6', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '1234@qq.com', '14517894564');
 INSERT INTO `user` VALUES (7, '22222', 'admin', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '45431155@qq.com', '1843266487');
 INSERT INTO `user` VALUES (9, '33333', 'admin1', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '1312312.12', '1235345345');
 INSERT INTO `user` VALUES (10, '44444', 'sdadasd', '$2a$10$YzHCc/BPLZ0LPgSDiYa/ROApYQrRUMJUayNWxCd5PXlfIuxk3yE7i', NULL, '3546383453', '1234567897');
@@ -552,26 +562,29 @@ CREATE TABLE `user_role`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `role_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
+  PRIMARY KEY (`id`, `user_id`) USING BTREE,
   INDEX `role_id4`(`role_id`) USING BTREE,
   INDEX `user_id0`(`user_id`) USING BTREE,
   CONSTRAINT `role_id4` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_id0` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_role
 -- ----------------------------
 INSERT INTO `user_role` VALUES (1, '11111', 1);
-INSERT INTO `user_role` VALUES (2, '12345', 3);
-INSERT INTO `user_role` VALUES (3, '16011', 4);
-INSERT INTO `user_role` VALUES (4, '16012', 4);
-INSERT INTO `user_role` VALUES (5, '16013', 4);
-INSERT INTO `user_role` VALUES (6, '16033', 4);
 INSERT INTO `user_role` VALUES (9, '33333', 2);
 INSERT INTO `user_role` VALUES (10, '44444', 2);
 INSERT INTO `user_role` VALUES (11, '55555', 2);
 INSERT INTO `user_role` VALUES (12, '77777', 2);
 INSERT INTO `user_role` VALUES (14, '22222', 2);
+INSERT INTO `user_role` VALUES (2, '12345', 3);
+INSERT INTO `user_role` VALUES (3, '16011', 4);
+INSERT INTO `user_role` VALUES (4, '16012', 4);
+INSERT INTO `user_role` VALUES (5, '16013', 4);
+INSERT INTO `user_role` VALUES (6, '16033', 4);
+INSERT INTO `user_role` VALUES (21, '160405201', 4);
+INSERT INTO `user_role` VALUES (22, '160405202', 4);
+INSERT INTO `user_role` VALUES (23, '160405203', 4);
 
 SET FOREIGN_KEY_CHECKS = 1;
