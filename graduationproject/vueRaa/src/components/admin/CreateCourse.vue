@@ -24,6 +24,16 @@
     <el-row style="margin-top: 10px">
       <el-col :span="4">
         <el-button
+          :type="submitType"
+          @click="submitclassandteacher"
+          style="width: 100%"
+          size="mini"
+          :disabled="show"
+          >{{ submitText }}</el-button
+        >
+      </el-col>
+      <el-col :span="4">
+        <el-button
           :type="changeType"
           @click="changeCourse"
           style="width: 100%"
@@ -125,10 +135,12 @@ export default {
       },
       changeType: "",
       deleteType: "",
+      submitType: "",
       show: true,
       data: {},
       confirmText: "等待操作",
       deleteText: "等待操作",
+      submitText: "等待操作",
       changeCourseDialog: false,
       insertCourseDialog: false,
       form: {
@@ -194,13 +206,17 @@ export default {
       if (data.major_name !== undefined) {
         this.changeType = "";
         this.deleteType = "";
+        this.submitType = "";
         this.show = true;
         this.confirmText = "等待操作";
         this.deleteText = "等待操作";
+        this.submitText = "等待操作";
       } else {
         this.changeType = "success";
         this.deleteType = "danger";
+        this.submitType = "primary";
         this.confirmText = "修改课程名称";
+        this.submitText = "添加关联班级和教师";
         this.deleteText = "删除课程";
         this.show = false;
         this.data = data;
@@ -232,6 +248,7 @@ export default {
         }
       });
     },
+    submitclassandteacher() {},
     insertCourseDetail() {
       var _this = this;
       this.$refs.form.validate(valid => {
