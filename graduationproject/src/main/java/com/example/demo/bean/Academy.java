@@ -49,6 +49,6 @@ public class Academy {
     }
 
     public void setChildren(List<Major> children) {
-        this.children = children;
+        this.children = children;  
     }
 }
