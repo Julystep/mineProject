@@ -301,6 +301,17 @@ public class AdminController {
         return adminService.getClassesAndTeacher(course_id);
     }
 
+    @RequestMapping(value = "/deletecourseandteacherandclassconnect", method = RequestMethod.POST)
+    public RespBean deleteCourseAndTeacherAndClassConnect(@RequestParam("course_id") int course_id){
+
+        if(adminService.deleteCourseAndTeacherAndClassConnect(course_id)) {
+            return RespBean.ok("删除关联成功");
+        }else{
+            return RespBean.error("删除关联失败");
+        }
+
+    }
+
 
 
 

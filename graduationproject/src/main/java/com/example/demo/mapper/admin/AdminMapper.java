@@ -118,4 +118,8 @@ public interface AdminMapper {
     List<MGCBean> getClasses(int course_id);
 
     Teacher getTeacher(int course_id);
+
+    boolean deleteCourseClassConnect(int course_id);
+
+    boolean deleteCourseTeacherConnect(int course_id);
 }

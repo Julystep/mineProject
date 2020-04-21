@@ -610,4 +610,10 @@ public class AdminService {
         return map;
 
     }
+
+    public boolean deleteCourseAndTeacherAndClassConnect(int course_id) {
+
+        return adminMapper.deleteCourseClassConnect(course_id) && adminMapper.deleteCourseTeacherConnect(course_id);
+
+    }
 }

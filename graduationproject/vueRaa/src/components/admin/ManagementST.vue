@@ -13,9 +13,6 @@
       <el-tab-pane label="专业课程管理">
         <createcourse ref="course"></createcourse>
       </el-tab-pane>
-      <el-tab-pane label="课程分配">
-        <submitcourse ref="submitcourse"></submitcourse>
-      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -25,15 +22,13 @@ import majorteachermanagement from "./MajorTeacherManagement";
 import onlineusermanagement from "./OnlineUserManageMent";
 import createclass from "./CreateClass";
 import createcourse from "./CreateCourse";
-import submitcourse from "./SubmitCourse";
 export default {
   components: {
     majorstudentmanagement,
     majorteachermanagement,
     onlineusermanagement,
     createclass,
-    createcourse,
-    submitcourse
+    createcourse
   },
   data() {
     return {};
@@ -53,7 +48,6 @@ export default {
         this.$refs.class.getAllGrade();
         this.$refs.teacher.getTeacherByMajor();
         this.$refs.course.getAllCourse();
-        /*   this.$refs.submitcourse.getAllClassByCourse(); */
       });
     }
   }

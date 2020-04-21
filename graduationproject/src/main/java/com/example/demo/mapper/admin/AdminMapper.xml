@@ -386,6 +386,12 @@
         select u.user_id, u.username, m.major_id from user u, teacher_info ti, major m, course_teacher ct
         where ct.course_id=#{course_id} and ct.teacher_id=u.user_id and u.user_id=ti.tid and ti.tmajor_id=m.major_id
     </select>
+    <delete id="deleteCourseClassConnect">
+        delete from course_class where course_id=#{course_id}
+    </delete>
+    <delete id="deleteCourseTeacherConnect">
+        delete from course_teacher where course_id=#{course_id}
+    </delete>
 
 
 </mapper>

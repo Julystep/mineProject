@@ -176,67 +176,96 @@
       title="提示"
       :visible.sync="checkclassandteacherDialog"
       :close-on-click-modal="false"
+      @close="closeMethod"
     >
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>绑定的班级</span>
+        </div>
+        <div v-for="(o, index) in mgcBeans" :key="index" class="text item">
+          {{ o.major_name + o.grade_name + o.class_name }}
+        </div>
+      </el-card>
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>绑定的教师</span>
+        </div>
+        <template v-if="teacher !== null">
+          <div class="text item">编号: {{ teacher.user_id }}</div>
+          <div class="text item">姓名: {{ teacher.username }}</div>
+        </template>
+        <template v-if="teacher === null">
+          <div class="text item">暂无教师</div>
+        </template>
+      </el-card>
+      <el-button
+        type="danger"
+        style="margin-top: 5px; width: 50%"
+        @click="deleteCourseAndTeacherAndClassConnect()"
+        >删除关联</el-button
+      >
     </el-dialog>
   </div>
 </template>
 <script>
 export default {
-  inject: ['reload'],
-  data () {
+  inject: ["reload"],
+  data() {
     return {
       options: [],
       defaultProps: {
-        children: 'childrencourse',
-        label: 'label'
+        children: "childrencourse",
+        label: "label"
       },
-      changeType: '',
-      deleteType: '',
-      submitType: '',
-      checkType: '',
+      changeType: "",
+      deleteType: "",
+      submitType: "",
+      checkType: "",
       show: true,
       data: {},
-      confirmText: '等待操作',
-      deleteText: '等待操作',
-      submitText: '等待操作',
-      checkText: '等待操作',
+      confirmText: "等待操作",
+      deleteText: "等待操作",
+      submitText: "等待操作",
+      checkText: "等待操作",
       changeCourseDialog: false,
       insertCourseDialog: false,
       submitclassandteacherDialog: false,
       checkclassandteacherDialog: false,
+      mgcBeans: [],
+      teacher: "",
       form: {
-        id: '',
+        id: "",
         label: [
           {
-            value: ''
+            value: ""
           }
         ]
       },
       form1: {
-        course_id: '',
-        course_name: '',
-        classValue: '',
-        teacher_name: ''
+        course_id: "",
+        course_name: "",
+        classValue: "",
+        teacher_name: ""
       },
       rules: {
         id: [
           {
             required: true,
-            message: '需要填写专业名称',
+            message: "需要填写专业名称",
             trigger: blur
           }
         ],
         classValue: [
           {
             required: true,
-            message: '需要填写班级名称',
+            message: "需要填写班级名称",
             trigger: blur
           }
         ],
         label: [
           {
             required: true,
-            message: '专业名称不能为空',
+            message: "专业名称不能为空",
             trigger: blur
           }
         ]
@@ -244,180 +273,231 @@ export default {
       rules1: [
         {
           required: true,
-          message: '课程名不能为空',
-          trigger: 'blur'
+          message: "课程名不能为空",
+          trigger: "blur"
         }
       ],
       rules2: {
         classValue: [
           {
             required: true,
-            message: '需要填写班级名称',
+            message: "需要填写班级名称",
             trigger: blur
           }
         ],
         teacher_name: [
           {
             required: true,
-            message: '需要填写教师名称',
+            message: "需要填写教师名称",
             trigger: blur
           }
         ]
       },
       majors: [],
       teachers: []
-    }
+    };
   },
   methods: {
-    showcheckdialog () {
-      this.checkclassandteacherDialog = true
-      this.getRequest('/admin/getclassesandteacher?course_id=' + this.data.value).then(resp => {
-        console.log(resp.data)
-      })
+    closeMethod() {
+      this.$message({
+        type: "success",
+        message: "关闭成功"
+      });
+      this.mgcBeans = [];
+      this.teacher = "";
     },
-    addCourse () {
-      this.form.label.push({ value: '', key: Date.now() })
+    showcheckdialog() {
+      this.checkclassandteacherDialog = true;
+      this.getRequest(
+        "/admin/getclassesandteacher?course_id=" + this.data.value
+      ).then(resp => {
+        console.log(resp.data);
+        this.mgcBeans = resp.data.mgcBeans;
+        this.teacher = resp.data.teacher;
+      });
     },
-    removeCourse (item) {
-      var index = this.form.label.indexOf(item)
+    addCourse() {
+      this.form.label.push({ value: "", key: Date.now() });
+    },
+    removeCourse(item) {
+      var index = this.form.label.indexOf(item);
       if (index !== -1) {
-        this.form.label.splice(index, 1)
+        this.form.label.splice(index, 1);
       }
     },
-    getAllCourse () {
-      var _this = this
-      this.postRequest('/admin/getallcourse', {
+    getAllCourse() {
+      var _this = this;
+      this.postRequest("/admin/getallcourse", {
         majorList: JSON.stringify(_this.$store.state.admin.majorList)
       }).then(resp => {
-        _this.options = resp.data
-      })
+        _this.options = resp.data;
+      });
     },
-    handleNodeClick (data) {
-      console.log(data)
-      console.log(typeof data.childrencourse !== undefined)
+    handleNodeClick(data) {
+      console.log(data);
+      console.log(typeof data.childrencourse !== undefined);
       if (data.major_name !== undefined) {
-        this.changeType = ''
-        this.deleteType = ''
-        this.submitType = ''
-        this.checkType = ''
-        this.show = true
-        this.confirmText = '等待操作'
-        this.deleteText = '等待操作'
-        this.submitText = '等待操作'
-        this.checkText = '等待操作'
+        this.changeType = "";
+        this.deleteType = "";
+        this.submitType = "";
+        this.checkType = "";
+        this.show = true;
+        this.confirmText = "等待操作";
+        this.deleteText = "等待操作";
+        this.submitText = "等待操作";
+        this.checkText = "等待操作";
       } else {
-        this.changeType = 'success'
-        this.deleteType = 'danger'
-        this.submitType = 'primary'
-        this.checkType = 'warning'
-        this.confirmText = '修改课程名称'
-        this.submitText = '添加关联班级和教师'
-        this.checkText = '查看关联班级和教师'
-        this.deleteText = '删除课程'
-        this.show = false
-        this.data = data
+        this.changeType = "success";
+        this.deleteType = "danger";
+        this.submitType = "primary";
+        this.checkType = "warning";
+        this.confirmText = "修改课程名称";
+        this.submitText = "添加关联班级和教师";
+        this.checkText = "查看关联班级和教师";
+        this.deleteText = "删除课程";
+        this.show = false;
+        this.data = data;
       }
     },
-    changeCourse () {
-      this.changeCourseDialog = true
+    changeCourse() {
+      this.changeCourseDialog = true;
     },
-    insertCourse () {
-      this.insertCourseDialog = true
+    insertCourse() {
+      this.insertCourseDialog = true;
     },
-    changeCourseDetail () {
-      var _this = this
+    changeCourseDetail() {
+      var _this = this;
       this.$refs.data.validate(valid => {
         if (valid) {
-          var form = JSON.stringify(_this.data)
-          this.postRequest('/admin/updatecourse', {
+          var form = JSON.stringify(_this.data);
+          this.postRequest("/admin/updatecourse", {
             form: form
           }).then(() => {
-            _this.changeCourseDialog = false
-            _this.getAllCourse()
-            _this.reload()
-          })
+            _this.changeCourseDialog = false;
+            _this.getAllCourse();
+            _this.reload();
+          });
         } else {
           this.$message({
-            type: 'warning',
-            message: '未按规则填写表单，请重新填写'
-          })
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
         }
-      })
+      });
     },
-    submitclassandteacher () {
-      this.form1.course_id = this.data.value
-      this.form1.course_name = this.data.label
-      this.submitclassandteacherDialog = true
-      var _this = this
-      this.postRequest('/admin/getclassandteacherbymajorlist', {
+    submitclassandteacher() {
+      this.form1.course_id = this.data.value;
+      this.form1.course_name = this.data.label;
+      this.submitclassandteacherDialog = true;
+      var _this = this;
+      this.postRequest("/admin/getclassandteacherbymajorlist", {
         majorList: JSON.stringify(_this.$store.state.admin.majorList)
       }).then(resp => {
-        console.log(resp.data)
-        _this.majors = resp.data.majors
-        _this.teachers = resp.data.teachers
-      })
+        console.log(resp.data);
+        _this.majors = resp.data.majors;
+        _this.teachers = resp.data.teachers;
+      });
     },
-    insertCourseDetail () {
-      var _this = this
+    insertCourseDetail() {
+      var _this = this;
       this.$refs.form.validate(valid => {
         if (valid) {
-          var form = JSON.stringify(_this.form)
-          this.postRequest('/admin/insertcourse', {
+          var form = JSON.stringify(_this.form);
+          this.postRequest("/admin/insertcourse", {
             form: form
           }).then(() => {
-            _this.insertCourseDialog = false
-            _this.getAllCourse()
-            _this.reload()
-          })
+            _this.insertCourseDialog = false;
+            _this.getAllCourse();
+            _this.reload();
+          });
         } else {
           this.$message({
-            type: 'warning',
-            message: '未按规则填写表单，请重新填写'
-          })
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
         }
-      })
+      });
     },
-    submitclassandteacherDetail () {
-      var _this = this
+    submitclassandteacherDetail() {
+      var _this = this;
       this.$refs.form1.validate(valid => {
         if (valid) {
-          var form = JSON.stringify(_this.form1)
-          this.postRequest('/admin/submitclassandteacher', {
+          var form = JSON.stringify(_this.form1);
+          this.postRequest("/admin/submitclassandteacher", {
             form: form
           }).then(() => {
-            _this.insertCourseDialog = false
-            _this.getAllCourse()
-            _this.reload()
-          })
+            _this.insertCourseDialog = false;
+            _this.getAllCourse();
+            _this.reload();
+          });
         } else {
           this.$message({
-            type: 'warning',
-            message: '未按规则填写表单，请重新填写'
-          })
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
         }
-      })
+      });
     },
-    deleteCourse () {
-      var _this = this
+    deleteCourseAndTeacherAndClassConnect() {
+      var _this = this;
       this.$confirm(
-        '确定要删除这个课程吗，删除之后关于该课程的信息将完全消失',
-        '提示',
+        "确定要删除这个关联吗，删除之后关于该关联方式将完全消失",
+        "提示",
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         }
       ).then(() => {
         _this
-          .postRequest('/admin/deletecourse', {
+          .postRequest("/admin/deletecourseandteacherandclassconnect", {
             course_id: _this.data.value
           })
           .then(() => {
-            _this.getAllCourse()
-            _this.reload()
+            _this.getAllCourse();
+            _this.reload();
+          });
+      });
+    },
+    deleteCourse() {
+      var _this = this;
+      this.$confirm(
+        "确定要删除这个课程吗，删除之后关于该课程的信息将完全消失",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      ).then(() => {
+        _this
+          .postRequest("/admin/deletecourse", {
+            course_id: _this.data.value
           })
-      })
+          .then(() => {
+            _this.getAllCourse();
+            _this.reload();
+          });
+      });
     }
   }
-}
+};
 </script>
+<style>
+.text {
+  font-size: 14px;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+</style>
