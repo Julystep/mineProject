@@ -625,6 +625,7 @@ export default {
       this.currentPage = currentPage;
       this.getonlinetestStudentInfo();
     },
+    /* 这里出现了问题 */
     showFileOnDrawer(answer, studentID, index) {
       this.answer = answer;
       if (answer == null || answer == "") {
@@ -642,7 +643,10 @@ export default {
             answer.question.judgeRules[i].value
           );
         }
-        this.scoresForm.judgeStudent = answer.question.judgeRules;
+
+        this.scoresForm.judgeStudent = JSON.parse(
+          JSON.stringify(answer.question.judgeRules)
+        );
       } else {
         for (var i = 0; i < answer.judge.length; i++) {
           answer.judge[i].value = parseInt(answer.judge[i].value);
@@ -650,9 +654,9 @@ export default {
             answer.question.judgeRules[i].value
           );
         }
-        this.scoresForm.judgeStudent = answer.judge;
+        this.scoresForm.judgeStudent = JSON.parse(JSON.stringify(answer.judge));
       }
-      this.answerRules = answer.question.judgeRules;
+      this.answerRules = JSON.parse(JSON.stringify(answer.question.judgeRules));
       this.studentIndex = index;
     },
     getPrevious() {
@@ -706,7 +710,7 @@ export default {
       this.answer.judge = this.scoresForm.judgeStudent;
       var answer = JSON.stringify(this.answer);
       console.log(answer);
-      this.postRequest("/teacher/changestudentsexaminationcores", {
+      /* this.postRequest("/teacher/changestudentsexaminationcores", {
         answer: answer,
         onlinetestID: _this.item.id,
         studentID: _this.studentID,
@@ -714,7 +718,7 @@ export default {
       }).then(resp => {
         _this.getonlinetestStudentInfo();
         _this.scoresDialog = false;
-      });
+      }); */
     },
     getAllSocres() {
       /* 计算某个学生的总成绩 */
