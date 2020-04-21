@@ -349,7 +349,7 @@
             <el-slider
               v-model="item5.value"
               show-input
-              :max="answerRules[index].value"
+              :max="parseInt(returnMax(index))"
               @change="getAllSocres()"
             ></el-slider>
           </el-form-item>
@@ -478,6 +478,10 @@ export default {
     this.getOnlineTestInfoByTeacherIdAndCourseId();
   },
   methods: {
+    returnMax(index) {
+      console.log(this.answerRules[index].value);
+      return this.answerRules[index].value;
+    },
     getOnlineTestInfoByTeacherIdAndCourseId() {
       /* 获取该教师在本门课程中发布的内容 */
       var _this = this;

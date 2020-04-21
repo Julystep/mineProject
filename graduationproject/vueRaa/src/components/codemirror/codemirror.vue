@@ -16,6 +16,9 @@
     </el-input>
     <el-row style="margin-top: 20px">
       <el-button type="success" round @click="submitInfo">点击运行</el-button>
+      <el-button type="primary" round @click="downloadcode"
+        >点击下载源码</el-button
+      >
     </el-row>
     <div class="outputDiv">
       <template v-if="type === 'success'">
@@ -76,6 +79,10 @@ export default {
     },
     getcode(code) {
       this.item = code;
+    },
+    downloadcode() {
+      var _this = this;
+      window.open("/downloadcode?code=" + _this.item, "_parent");
     }
   },
   mounted() {

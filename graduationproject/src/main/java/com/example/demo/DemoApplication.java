@@ -2,10 +2,12 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @EnableRedisHttpSession将session存储到redis中；
  */
+@EnableScheduling
 @SpringBootApplication
 public class  DemoApplication {
 

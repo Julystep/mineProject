@@ -240,7 +240,6 @@ public class PoiUtils {
                         switch (cell.getCellTypeEnum()) {
                             case STRING: {
                                 String cellValue = cell.getStringCellValue();
-                                System.out.println(cellValue);
                                 if (cellValue == null) {
                                     cellValue = "";
                                 }

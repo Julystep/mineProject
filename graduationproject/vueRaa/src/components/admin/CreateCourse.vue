@@ -176,7 +176,6 @@
       title="提示"
       :visible.sync="checkclassandteacherDialog"
       :close-on-click-modal="false"
-      @close="closeMethod"
     >
       <el-card class="box-card">
         <div slot="header" class="clearfix">
@@ -298,14 +297,6 @@ export default {
     };
   },
   methods: {
-    closeMethod() {
-      this.$message({
-        type: "success",
-        message: "关闭成功"
-      });
-      this.mgcBeans = [];
-      this.teacher = "";
-    },
     showcheckdialog() {
       this.checkclassandteacherDialog = true;
       this.getRequest(
