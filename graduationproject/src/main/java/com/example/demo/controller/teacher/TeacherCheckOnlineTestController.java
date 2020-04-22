@@ -2,8 +2,10 @@ package com.example.demo.controller.teacher;
 
 import com.example.demo.bean.Examination;
 import com.example.demo.bean.RespBean;
+import com.example.demo.common.PoiUtils;
 import com.example.demo.service.teacher.TeacherCheckOnlineTestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -115,6 +117,14 @@ public class TeacherCheckOnlineTestController {
         }else{
             return RespBean.error("修改教师评语失败");
         }
+
+    }
+
+    @RequestMapping(value = "/exportStudentTest", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> exportTeacher(@RequestParam("onlinetestID") int onlinetestID,
+                                                @RequestParam("classValue") int[] classValue) throws Exception {
+
+        return PoiUtils.exportStudentTestExcel(teacherCheckOnlineTestService.exportStudentScoresInfo(onlinetestID, classValue), teacherCheckOnlineTestService.getStudentJudge(onlinetestID));
 
     }
 

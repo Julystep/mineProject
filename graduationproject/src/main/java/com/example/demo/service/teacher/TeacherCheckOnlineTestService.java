@@ -3,6 +3,8 @@ package com.example.demo.service.teacher;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.bean.ClassStudent;
+import com.example.demo.bean.ClassStudentOnlineTest;
 import com.example.demo.bean.Examination;
 import com.example.demo.mapper.teacher.TeacherCheckOnlineTestMapper;
 import org.springframework.stereotype.Service;
@@ -86,5 +88,22 @@ public class TeacherCheckOnlineTestService {
 
     public boolean changeExaminationComment(int homeworkID, String studentID, String main) {
         return teacherCheckOnlineTestMapper.changeExaminationComment(homeworkID, studentID, main);
+    }
+
+    public List<ClassStudentOnlineTest> exportStudentScoresInfo(int onlinetestID, int[] classValue) {
+
+        List<Integer> classList = new ArrayList<>();
+        for (int i = 0; i < classValue.length; i++) {
+            classList.add(classValue[i]);
+        }
+        List<ClassStudentOnlineTest> classStudents =  teacherCheckOnlineTestMapper.exportStudentScoresInfo(onlinetestID, classList);
+        return classStudents;
+
+    }
+
+    public String getStudentJudge(int onlinetestID) {
+
+        return teacherCheckOnlineTestMapper.getStudentJudge(onlinetestID);
+
     }
 }

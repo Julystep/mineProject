@@ -190,5 +190,35 @@
         update examination_student set comment=#{main} where examination_id=#{homeworkID} and student_id=#{studentID}
     </update>
 
+    <select id="exportStudentScoresInfo" resultMap="OnlineTestClassMap">
+        select
+        es.*, si.sclass_id, u.username, c.class_name, g.grade_name, m.major_name, ei.examination_title, ei.examination_main
+        from
+        examination_student es, student_info si, class c, grade g, major m, user u, examination_info ei
+        where
+        es.examination_id=#{onlinetestID}
+        and
+        es.student_id=si.sid
+        and
+        si.sclass_id=c.class_id
+        and
+        c.grade_id=g.id
+        and
+        g.major_id=m.major_id
+        and
+        si.sid=u.user_id
+        and
+        si.sclass_id in
+        <foreach collection="classList" separator="," open="(" close=")" index="index" item="item">
+            (#{item})
+        </foreach>
+        and ei.id=#{onlinetestID}
+        order by m.major_name, g.grade_name, c.class_name, u.user_id
+    </select>
+
+    <select id="getStudentJudge" resultType="String">
+        select examination_main from examination_info where id=#{onlinetestID}
+    </select>
+
 
 </mapper>

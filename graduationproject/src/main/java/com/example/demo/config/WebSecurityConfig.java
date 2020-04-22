@@ -83,7 +83,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          * expiredSessionStrategy()的作用是旧用户被踢出后执行的操作，我们这里不做设计
          * 只能在刷新界面后才起作用，所以这里就没有实用价值
          */
-        http.sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(false);
+        http.sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(false)
+                .expiredSessionStrategy(new LzcExpiredSessionStrategy());
+        http.sessionManagement().invalidSessionStrategy(new InvalidSessionStrategy(){
+
+            @Override
+            public void onInvalidSessionDetected(HttpServletRequest req,
+                                                 HttpServletResponse resp) throws IOException, ServletException {
+
+                resp.setContentType("application/json;charset=utf-8");
+                RespBean respBean = RespBean.error("用户登录超时,请重新登录");
+                ObjectMapper om = new ObjectMapper();
+                PrintWriter out = resp.getWriter();
+                out.write(om.writeValueAsString(respBean));
+                out.flush();
+                out.close();
+
+            }
+        });
 
         http.authorizeRequests()
                 .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
@@ -155,6 +172,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .permitAll()
                 .and().csrf().disable();
-                /*.antMatcher("/session/sessionouttime").sessionManagement().invalidSessionUrl("/session/sessionouttime");*/
     }
 }

@@ -219,6 +219,7 @@
             (#{item})
         </foreach>
         and hi.id=#{homeworkID}
+        order by m.major_name, g.grade_name, c.class_name, u.user_id
     </select>
 
     <select id="getStudentJudge" resultType="String">

@@ -1,5 +1,6 @@
 package com.example.demo.mapper.teacher;
 
+import com.example.demo.bean.ClassStudent;
 import com.example.demo.bean.ClassStudentOnlineTest;
 import com.example.demo.bean.Examination;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,4 +29,8 @@ public interface TeacherCheckOnlineTestMapper {
     boolean changeStudentexaminationScores(String answer, String studentID, int homeworkID, String commentValue);
 
     boolean changeExaminationComment(int homeworkID, String studentID, String main);
+
+    List<ClassStudentOnlineTest> exportStudentScoresInfo(int onlinetestID, List<Integer> classList);
+
+    String getStudentJudge(int onlinetestID);
 }
