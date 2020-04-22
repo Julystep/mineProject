@@ -393,5 +393,9 @@
         delete from course_teacher where course_id=#{course_id}
     </delete>
 
+    <update id="changePassword">
+        update user set password=#{passwordEncode} where user_id=#{user_id}
+    </update>
+
 
 </mapper>

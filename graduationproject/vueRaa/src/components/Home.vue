@@ -12,8 +12,12 @@
               {{ user.username }}
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="changeInfo">修改信息</el-dropdown-item>
               <el-dropdown-item command="changePassword"
                 >修改密码</el-dropdown-item
+              >
+              <el-dropdown-item command="forgetPassword"
+                >忘记密码</el-dropdown-item
               >
               <el-dropdown-item command="logout" divided>注销</el-dropdown-item>
             </el-dropdown-menu>
@@ -71,12 +75,125 @@
         </el-main>
       </el-container>
     </el-container>
+    <el-dialog
+      title="提示"
+      :visible.sync="changeInfoDialog"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        label-position="left"
+        label-width="80px"
+        :model="form"
+        :rules="rules"
+        ref="formName"
+      >
+        <el-form-item label="账号">
+          <el-input v-model="form.user_id" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="姓名" prop="username">
+          <el-input v-model="form.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="form.phone"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="changeInfoDialog = false">取 消</el-button>
+        <el-button type="primary" @click="changeInfoDialogDetail()"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="changePasswordDialog"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        label-position="left"
+        label-width="80px"
+        :model="form1"
+        :rules="rules1"
+        ref="formName1"
+      >
+        <el-form-item label="输入密码" prop="password1">
+          <el-input v-model="form1.password1" show-password></el-input>
+        </el-form-item>
+        <el-form-item label="再次输入" prop="password2">
+          <el-input v-model="form1.password2" show-password></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="changePasswordDialog = false">取 消</el-button>
+        <el-button type="primary" @click="changePasswordDialogDetail()"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 export default {
+  inject: ["reload"],
   data() {
-    return {};
+    return {
+      changeInfoDialog: false,
+      changePasswordDialog: false,
+      form: {
+        user_id: "",
+        usernam: "",
+        email: "",
+        phone: ""
+      },
+      rules: {
+        email: [
+          {
+            pattern: /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/,
+            message: "请输入正确的邮箱",
+            trigger: "blur"
+          }
+        ],
+        phone: [
+          {
+            pattern: /^1[3456789]\d{9}$/,
+            message: "请输入正确的手机号码",
+            trigger: "blur"
+          }
+        ]
+      },
+      form1: {
+        user_id: this.$store.state.user.user_id,
+        password1: "",
+        password2: ""
+      },
+      rules1: {
+        password1: [
+          {
+            required: true,
+            message: "密码不能为空"
+          },
+          {
+            pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_!@#$%^&*`~()-+=]+$)(?![a-z0-9]+$)(?![a-z\W_!@#$%^&*`~()-+=]+$)(?![0-9\W_!@#$%^&*`~()-+=]+$)[a-zA-Z0-9\W_!@#$%^&*`~()-+=]{8,30}$/,
+            message: "密码格式不正确，由8-20个字母加数字加特殊符号构成"
+          }
+        ],
+        password2: [
+          {
+            required: true,
+            message: "密码不能为空"
+          },
+          {
+            pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_!@#$%^&*`~()-+=]+$)(?![a-z0-9]+$)(?![a-z\W_!@#$%^&*`~()-+=]+$)(?![0-9\W_!@#$%^&*`~()-+=]+$)[a-zA-Z0-9\W_!@#$%^&*`~()-+=]{8,30}$/,
+            message: "密码格式不正确，由8-20个字母加数字加特殊符号构成"
+          }
+        ]
+      }
+    };
   },
   mounted() {},
   methods: {
@@ -100,6 +217,63 @@ export default {
             });
           });
       }
+      if (cmd == "changeInfo") {
+        this.changeInfoDialog = true;
+        this.form.user_id = this.$store.state.user.user_id;
+        this.form.username = this.$store.state.user.username;
+        this.form.email = this.$store.state.user.email;
+        this.form.phone = this.$store.state.user.phone;
+      }
+      if (cmd == "changePassword") {
+        this.changePasswordDialog = true;
+      }
+    },
+    changeInfoDialogDetail() {
+      var _this = this;
+      this.$refs.formName.validate(valid => {
+        if (valid) {
+          var form = JSON.stringify(_this.form);
+          console.log(form);
+          this.postRequest("/admin/changestudentinfo", {
+            form: form
+          }).then(() => {
+            _this.changeInfoDialog = false;
+            _this.reload();
+          });
+        } else {
+          this.$message({
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
+        }
+      });
+    },
+    changePasswordDialogDetail() {
+      var _this = this;
+      this.$refs.formName1.validate(valid => {
+        if (valid) {
+          if (_this.form1.password1 !== _this.form1.password2) {
+            this.$message({
+              type: "warning",
+              message: "两次输入密码不正确，请重新输入"
+            });
+            return;
+          }
+          var form = JSON.stringify(_this.form1);
+          console.log(form);
+          this.postRequest("/admin/changepassword", {
+            form: form
+          }).then(() => {
+            _this.changeInfoDialog = false;
+            _this.reload();
+          });
+        } else {
+          this.$message({
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
+        }
+      });
     }
   },
   computed: {

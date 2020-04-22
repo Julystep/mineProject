@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.demo.bean.*;
 import com.example.demo.mapper.admin.AdminMapper;
 import com.example.demo.mapper.root.RootMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -614,6 +615,17 @@ public class AdminService {
     public boolean deleteCourseAndTeacherAndClassConnect(int course_id) {
 
         return adminMapper.deleteCourseClassConnect(course_id) && adminMapper.deleteCourseTeacherConnect(course_id);
+
+    }
+
+    public boolean changePassword(String form) {
+
+        JSONObject jsonObject = JSON.parseObject(form);
+        String password = jsonObject.getString("password1");
+        String user_id = jsonObject.getString("user_id");
+        BCryptPasswordEncoder bCryptPasswordEncoder =  new BCryptPasswordEncoder();
+        String passwordEncode = bCryptPasswordEncoder.encode(password);
+        return adminMapper.changePassword(user_id, passwordEncode);
 
     }
 }

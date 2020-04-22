@@ -2,7 +2,7 @@
   <div class="form-div" id="homeworkDetailPage">
     <el-row :gutter="20">
       <el-col :xs="20" :sm="23" :md="20" :lg="16" :xl="12" :offset="1"
-        ><el-form ref="form" :model="form" label-width="100px">
+        ><el-form ref="form" :model="form" :rules="rules" label-width="100px">
           <el-form-item label="考试名称" prop="title">
             <el-input v-model="form.title" size="mini"></el-input>
           </el-form-item>
@@ -141,6 +141,29 @@ export default {
           }
         ]
       },
+      rules: {
+        classValue: [
+          {
+            required: true,
+            message: "需要填写班级名称",
+            trigger: blur
+          }
+        ],
+        title: [
+          {
+            required: true,
+            message: "需要填写考试题目",
+            trigger: blur
+          }
+        ],
+        dateValue: [
+          {
+            required: true,
+            message: "需要填写考试日期",
+            trigger: blur
+          }
+        ]
+      },
       fullscreenLoading: false,
       props: {
         multiple: true
@@ -191,6 +214,13 @@ export default {
       }
     },
     addJudgeRule(m) {
+      if (m.judgeRules.length === 5) {
+        this.$message({
+          type: "warning",
+          message: "添加的标准最多为5个"
+        });
+        return;
+      }
       m.judgeRules.push({ name: "", value: "", key: Date.now() });
     },
 

@@ -312,6 +312,17 @@ public class AdminController {
 
     }
 
+    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    public RespBean changePassword(@RequestParam("form") String form){
+
+        if(adminService.changePassword(form)) {
+            return RespBean.ok("修改成功");
+        }else{
+            return RespBean.error("修改失败");
+        }
+
+    }
+
 
 
 
