@@ -71,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception{
-        web.ignoring().antMatchers( "/homework/**");
+        web.ignoring().antMatchers( "/homework/**", "/mail/**", "/admin/changepassword", "/getemailbyuser_id");
     }
 
     @Override

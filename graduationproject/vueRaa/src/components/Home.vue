@@ -16,9 +16,6 @@
               <el-dropdown-item command="changePassword"
                 >修改密码</el-dropdown-item
               >
-              <el-dropdown-item command="forgetPassword"
-                >忘记密码</el-dropdown-item
-              >
               <el-dropdown-item command="logout" divided>注销</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -233,7 +230,6 @@ export default {
       this.$refs.formName.validate(valid => {
         if (valid) {
           var form = JSON.stringify(_this.form);
-          console.log(form);
           this.postRequest("/admin/changestudentinfo", {
             form: form
           }).then(() => {
@@ -260,12 +256,11 @@ export default {
             return;
           }
           var form = JSON.stringify(_this.form1);
-          console.log(form);
           this.postRequest("/admin/changepassword", {
             form: form
           }).then(() => {
-            _this.changeInfoDialog = false;
-            _this.reload();
+            _this.changePasswordDialog = false;
+            _this.$router.push("/");
           });
         } else {
           this.$message({
