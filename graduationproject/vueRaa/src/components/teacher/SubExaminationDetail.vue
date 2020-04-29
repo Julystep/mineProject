@@ -33,11 +33,7 @@
             v-for="(m, index) in form.main"
             :label="'题目' + index"
             :key="m.key"
-            :rules="{
-              required: true,
-              message: '发布考试主体不能为空',
-              trigger: 'blur'
-            }"
+            prop="main"
           >
             <el-input
               v-model="m.title"
@@ -121,6 +117,45 @@
 <script>
 export default {
   data() {
+    //自定义表单验证规则
+    var checkQuestion = (rule, value, callback) => {
+      console.log(value);
+      for (var i = 0; i < value.length; i++) {
+        if (value[i].title == null || value[i].title == "") {
+          callback(new Error("请输入题目"));
+        } else if (value[i].main == null || value[i].main == "") {
+          callback(new Error("请输入内容"));
+        } else if (value[i].totalScores == null || value[i].totalScores == "") {
+          callback(new Error("请输入总分"));
+        }
+        if (isNaN(value[i].totalScores)) {
+          callback(new Error("请正确输入总分"));
+        }
+        var totalScores = 0;
+        for (var j = 0; j < value[i].judgeRules.length; j++) {
+          if (
+            value[i].judgeRules[j].name == null ||
+            value[i].judgeRules[j].name == ""
+          ) {
+            callback(new Error("请输入评分项名称"));
+          } else if (
+            value[i].judgeRules[j].value == null ||
+            value[i].judgeRules[j].value == ""
+          ) {
+            callback(new Error("请输入评分项分数"));
+          }
+          if (isNaN(value[i].judgeRules[j].value)) {
+            callback(new Error("请输入正确的评分项分数"));
+          } else {
+            totalScores += parseInt(value[i].judgeRules[j].value);
+          }
+        }
+        console.log(totalScores);
+        if (parseInt(value[i].totalScores) != totalScores) {
+          callback(new Error("总分和评分项分数不相同"));
+        }
+      }
+    };
     return {
       form: {
         title: "",
@@ -162,6 +197,12 @@ export default {
             message: "需要填写考试日期",
             trigger: blur
           }
+        ],
+        main: [
+          {
+            validator: checkQuestion,
+            trigger: "blur"
+          }
         ]
       },
       fullscreenLoading: false,
@@ -184,6 +225,7 @@ export default {
         if (!valid) {
           return false;
         } else {
+          console.log(_this.form);
           form = JSON.stringify(_this.form);
           _this.fullscreenLoading = true;
           _this
