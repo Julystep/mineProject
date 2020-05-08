@@ -53,15 +53,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    connect(context) {
-      context.state.stomp = Stomp.over(new SockJS("/ws/endpointChat"));
-      context.state.stomp.connect({}, frame => {
-        context.state.stomp.subscribe('/user/' + context.state.user.userID + '/queue/sessionouttime',
-          function (response) {
-            var code = JSON.parse(response.body);
-            console.log(code);
-          });
-      })
-    }
+
   }
 });

@@ -160,32 +160,9 @@ public class AdminService {
         student.setPhone(phone);
         student.setClass_id(classId);
 
-        if(studenttest.getEmail() != null){
-            if(student.getEmail() != null){
-                if(studenttest.getEmail().equals(student.getEmail())){
-                    student.setEmail(null);
-                }
-            }else{
-                student.setEmail(null);
-            }
-        }else{
-            flag1 = false;
-        }
-        if(studenttest.getPhone() != null){
-            if(student.getPhone() != null){
-                if(studenttest.getPhone().equals(student.getPhone())){
-                    student.setPhone(null);
-                }
-            }else{
-                student.setPhone(null);
-            }
-        }else{
-            flag1 = false;
-        }
 
-        if(!flag1){
-            flag1 = adminMapper.updateUser(student);
-        }
+        flag1 = adminMapper.updateUser(student);
+
         if(studenttest.getClass_id() == student.getClass_id()){
             flag2 = true;
         }else{
@@ -262,32 +239,8 @@ public class AdminService {
         teacher.setPhone(phone);
         teacher.setMajor_id(majorValue);
 
-        if(teachertest.getEmail() != null){
-            if(teacher.getEmail() != null){
-                if(teachertest.getEmail().equals(teacher.getEmail())){
-                    teacher.setEmail(null);
-                }
-            }else{
-                teacher.setEmail(null);
-            }
-        }else{
-            flag1 = false;
-        }
-        if(teachertest.getPhone() != null){
-            if(teacher.getPhone() != null){
-                if(teachertest.getPhone().equals(teacher.getPhone())){
-                    teacher.setPhone(null);
-                }
-            }else{
-                teacher.setPhone(null);
-            }
-        }else{
-            flag1 = false;
-        }
+        flag1 = adminMapper.updateTUser(teacher);
 
-        if(!flag1){
-            flag1 = adminMapper.updateTUser(teacher);
-        }
 
 
         if(teachertest.getMajor_id() == teacher.getMajor_id()){

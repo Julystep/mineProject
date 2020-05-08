@@ -301,7 +301,8 @@ export default {
     fileUploadError() {
       this.$message({
         type: "error",
-        message: "导入文件失败, 可能原因为数据库不存在该学生填写的班级或学号不和规范"
+        message:
+          "导入文件失败, 可能原因为数据库不存在该学生填写的班级或学号不和规范"
       });
     },
     currentChange(currentPage) {
@@ -310,6 +311,11 @@ export default {
     },
 
     insertStudentInfo() {
+      this.form.user_id = "";
+      this.form.username = "";
+      this.form.email = "";
+      this.form.phone = "";
+      this.form.classValue = [];
       this.insertStudentDialog = true;
     },
     insertStudentInfoDetail() {
@@ -362,6 +368,7 @@ export default {
       });
     },
     deleteStudentInfo(row) {
+      var _this = this;
       this.$confirm("确定要删除该学生的信息吗", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

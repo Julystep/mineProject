@@ -238,94 +238,94 @@
 
 <script>
 export default {
-  inject: ['reload'],
-  data () {
+  inject: ["reload"],
+  data() {
     return {
       form1: {
         majorValue: [],
-        userInfo: ''
+        userInfo: ""
       },
       currentPage: 1,
-      teacherInfo: '',
-      majorList: '',
-      activeName: '',
+      teacherInfo: "",
+      majorList: "",
+      activeName: "",
       insertTeacherDialog: false,
       changeTeacherDialog: false,
       options: [],
       form: {
-        user_id: '',
-        username: '',
-        email: '',
-        phone: '',
-        majorValue: ''
+        user_id: "",
+        username: "",
+        email: "",
+        phone: "",
+        majorValue: ""
       },
       rules: {
         user_id: [
-          { required: true, message: '请输入账号', trigger: 'blur' },
+          { required: true, message: "请输入账号", trigger: "blur" },
           {
             pattern: /^[0-9]{5}$/,
-            message: '请输入5位教师账户',
-            trigger: 'blur'
+            message: "请输入5位教师账户",
+            trigger: "blur"
           }
         ],
-        username: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        username: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         email: [
           {
             pattern: /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/,
-            message: '请输入正确的邮箱',
-            trigger: 'blur'
+            message: "请输入正确的邮箱",
+            trigger: "blur"
           }
         ],
         phone: [
           {
             pattern: /^1[3456789]\d{9}$/,
-            message: '请输入正确的手机号码',
-            trigger: 'blur'
+            message: "请输入正确的手机号码",
+            trigger: "blur"
           }
         ],
         majorValue: [
           {
             required: true,
-            message: '班级选项不为空'
+            message: "班级选项不为空"
           }
         ]
       }
-    }
+    };
   },
   methods: {
-    fileUploadSuccess () {
+    fileUploadSuccess() {
       this.$message({
-        type: 'success',
-        message: '导入文件成功'
-      })
+        type: "success",
+        message: "导入文件成功"
+      });
     },
-    fileUploadError () {
+    fileUploadError() {
       this.$message({
-        type: 'error',
+        type: "error",
         message:
-          '导入文件失败, 可能原因为数据库不存在该教师填写的教师号和专业不规范'
-      })
+          "导入文件失败, 可能原因为数据库不存在该教师填写的教师号和专业不规范"
+      });
     },
     /* 根据专业来获取教师 */
-    getTeacherByMajor () {
-      var _this = this
-      var form = JSON.stringify(this.form1)
-      this.postRequest('/admin/getteacherbymajor', {
+    getTeacherByMajor() {
+      var _this = this;
+      var form = JSON.stringify(this.form1);
+      this.postRequest("/admin/getteacherbymajor", {
         majorList: JSON.stringify(_this.$store.state.admin.majorList),
         currentPage: _this.currentPage,
         size: 20,
         form: form
       }).then(resp => {
-        _this.teacherInfo = resp.data
-        _this.majorList = _this.$store.state.admin.majorList
-      })
+        _this.teacherInfo = resp.data;
+        _this.majorList = _this.$store.state.admin.majorList;
+      });
     },
-    getChange (activeName) {
+    getChange(activeName) {
       /* 获取在当前专业下的班级信息 */
-      if (activeName === null || activeName === '') {
-        return
+      if (activeName === null || activeName === "") {
+        return;
       }
-      this.options = this.$store.state.admin.majorList
+      this.options = this.$store.state.admin.majorList;
       /* var _this = this;
       this.postRequest("/admin/getallmajorbymajorlist", {
         majorList: JSON.stringify(_this.$store.state.admin.majorList)
@@ -333,86 +333,91 @@ export default {
         _this.options = resp.data;
       }); */
     },
-    insertTeacherInfo () {
-      this.insertTeacherDialog = true
+    insertTeacherInfo() {
+      this.form.user_id = "";
+      this.form.username = "";
+      this.form.email = "";
+      this.form.phone = "";
+      this.form.majorValue = "";
+      this.insertTeacherDialog = true;
     },
-    getInfo (index) {
+    getInfo(index) {
       /* 获取学生信息 */
-      var _this = this
-      return this.teacherInfo[_this.majorList[index].major_name]
+      var _this = this;
+      return this.teacherInfo[_this.majorList[index].major_name];
     },
-    getInfoCount (index) {
-      var _this = this
-      return this.teacherInfo[_this.majorList[index].major_name + 'count']
+    getInfoCount(index) {
+      var _this = this;
+      return this.teacherInfo[_this.majorList[index].major_name + "count"];
     },
-    currentChange (currentPage) {
-      this.currentPage = currentPage
-      this.getTeacherByMajor()
+    currentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.getTeacherByMajor();
     },
-    changeTeacherInfo (row) {
-      this.form.user_id = row.user_id
-      this.form.username = row.username
-      this.form.email = row.email
-      this.form.phone = row.phone
-      this.form.majorValue = row.major_id
-      this.changeTeacherDialog = true
+    changeTeacherInfo(row) {
+      this.form.user_id = row.user_id;
+      this.form.username = row.username;
+      this.form.email = row.email;
+      this.form.phone = row.phone;
+      this.form.majorValue = row.major_id;
+      this.changeTeacherDialog = true;
     },
-    changeTeacherInfoDetail () {
-      var _this = this
+    changeTeacherInfoDetail() {
+      var _this = this;
       this.$refs.formName.validate(valid => {
         if (valid) {
-          var form = JSON.stringify(_this.form)
-          console.log(form)
-          this.postRequest('/admin/changeteacherinfo', {
+          var form = JSON.stringify(_this.form);
+          console.log(form);
+          this.postRequest("/admin/changeteacherinfo", {
             form: form
           }).then(() => {
-            _this.changeTeacherDialog = false
-            _this.getTeacherByMajor()
-            _this.reload()
-          })
+            _this.changeTeacherDialog = false;
+            _this.getTeacherByMajor();
+            _this.reload();
+          });
         } else {
           this.$message({
-            type: 'warning',
-            message: '未按规则填写表单，请重新填写'
-          })
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
         }
-      })
+      });
     },
-    deleteTeacherInfo (row) {
-      var _this = this
-      this.$confirm('确定要删除该教师的信息吗', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+    deleteTeacherInfo(row) {
+      var _this = this;
+      this.$confirm("确定要删除该教师的信息吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       }).then(() => {
-        this.postRequest('/admin/deleteTeacherInfo', {
+        this.postRequest("/admin/deleteTeacherInfo", {
           user_id: row.user_id
         }).then(() => {
-          _this.getTeacherByMajor()
-          _this.reload()
-        })
-      })
+          _this.getTeacherByMajor();
+          _this.reload();
+        });
+      });
     },
-    insertTeacherInfoDetail () {
-      var _this = this
+    insertTeacherInfoDetail() {
+      var _this = this;
       this.$refs.formName.validate(valid => {
         if (valid) {
-          var form = JSON.stringify(_this.form)
-          this.postRequest('/admin/insertteacherinfo', {
+          var form = JSON.stringify(_this.form);
+          this.postRequest("/admin/insertteacherinfo", {
             form: form
           }).then(() => {
-            _this.insertTeacherDialog = false
-            _this.getTeacherByMajor()
-            _this.reload()
-          })
+            _this.insertTeacherDialog = false;
+            _this.getTeacherByMajor();
+            _this.reload();
+          });
         } else {
           this.$message({
-            type: 'warning',
-            message: '未按规则填写表单，请重新填写'
-          })
+            type: "warning",
+            message: "未按规则填写表单，请重新填写"
+          });
         }
-      })
+      });
     }
   }
-}
+};
 </script>
