@@ -23,7 +23,7 @@ public class OnlineTestController {
     @Resource
     OnlineTestService onlineTestService;
 
-    @RequestMapping(value = "/submit/code", method = RequestMethod.GET)
+    @RequestMapping(value = "/submit/code", method = RequestMethod.POST)
     public Map<String, String> getCode(@RequestParam("code") String code, @RequestParam("param") String param){
         //输出code
         Map<String, String> runResultMap = new HashMap<>();
@@ -36,7 +36,9 @@ public class OnlineTestController {
                                HttpServletRequest request,
                                HttpServletResponse response) throws IOException {
 
-        return onlineTestService.downloadcode(code, request, response);
+        return code;
+
+        /*return onlineTestService.downloadcode(code, request, response);*/
 
     }
 

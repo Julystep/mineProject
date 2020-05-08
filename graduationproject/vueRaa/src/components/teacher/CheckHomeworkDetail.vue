@@ -519,6 +519,7 @@
 import pdf from "vue-pdf";
 export default {
   components: { pdf },
+  inject: ["reload"],
   data() {
     return {
       homework: "",
@@ -652,6 +653,7 @@ export default {
                 homeworkID: _this.item.id
               })
               .then(resp => {
+                _this.reload();
                 instance.confirmButtonLoading = false;
                 done();
               });

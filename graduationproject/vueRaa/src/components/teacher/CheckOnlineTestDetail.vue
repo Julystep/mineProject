@@ -428,6 +428,7 @@ import codemirror from "../codemirror/codemirror";
 
 export default {
   components: { codemirror: codemirror },
+  inject: ["reload"],
   data() {
     return {
       item: "",
@@ -612,6 +613,7 @@ export default {
                 onlinetestID: _this.item.id
               })
               .then(resp => {
+                _this.reload();
                 instance.confirmButtonLoading = false;
                 done();
               });

@@ -69,7 +69,6 @@ export default {
         _this.runResult = resp.data.runResult;
         _this.type = resp.data.type;
       });
-      s;
     },
     showItem() {
       this.$emit("saveCodeInfo", this.item);
@@ -82,7 +81,17 @@ export default {
     },
     downloadcode() {
       var _this = this;
-      window.open("/downloadcode?code=" + _this.item, "_parent");
+      this.downloadRequest("/downloadcode?", {
+        code: _this.item
+      }).then(res => {
+        console.log(res);
+        let blob = new Blob([res.data], { type: "java/java" });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "java文件";
+        link.click();
+        link.remove();
+      });
     }
   },
   mounted() {

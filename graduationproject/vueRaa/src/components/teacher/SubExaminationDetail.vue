@@ -101,7 +101,6 @@
             >
           </el-form-item>
 
-          <el-form-item>
             <el-button
               type="primary"
               @click="onSubmit('form')"
@@ -119,7 +118,6 @@ export default {
   data() {
     //自定义表单验证规则
     var checkQuestion = (rule, value, callback) => {
-      console.log(value);
       for (var i = 0; i < value.length; i++) {
         if (value[i].title == null || value[i].title == "") {
           callback(new Error("请输入题目"));
@@ -150,9 +148,10 @@ export default {
             totalScores += parseInt(value[i].judgeRules[j].value);
           }
         }
-        console.log(totalScores);
         if (parseInt(value[i].totalScores) != totalScores) {
           callback(new Error("总分和评分项分数不相同"));
+        }else{
+          callback();
         }
       }
     };
@@ -223,6 +222,7 @@ export default {
       var map = new Map();
       this.$refs[form].validate(valid => {
         if (!valid) {
+          console.log("不合格")
           return false;
         } else {
           console.log(_this.form);

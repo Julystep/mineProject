@@ -10,6 +10,9 @@ import pdf from 'vue-pdf'
 import 'element-ui/lib/theme-chalk/index.css'
 import './utils/filter_utils'
 import {
+  downloadRequest
+} from './utils/api'
+import {
   getRequest
 } from './utils/api'
 import {
@@ -35,6 +38,7 @@ Vue.use(pdf)
 
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.postRequest = postRequest;
+Vue.prototype.downloadRequest = downloadRequest;
 Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.putRequest = putRequest;
 Vue.prototype.uploadFileRequest = uploadFileRequest;
