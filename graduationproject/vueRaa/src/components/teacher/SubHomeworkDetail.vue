@@ -7,7 +7,12 @@
             <el-input v-model="form.title"></el-input>
           </el-form-item>
           <el-form-item label="作业内容" prop="main">
-            <el-input type="textarea" rows="10" v-model="form.main"></el-input>
+            <quill-editor
+              ref="text"
+              v-model="form.main"
+              class="myQuillEditor"
+              :options="editorOption"
+            />
           </el-form-item>
           <el-form-item label="选择时间" prop="dateValue">
             <el-date-picker
@@ -83,9 +88,21 @@
   </div>
 </template>
 <script>
+import { quillEditor } from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 export default {
+  components: {
+    quillEditor
+  },
   data() {
     return {
+      editorOption: {
+        modules: {
+          toolbar: ["bold", "italic", "underline", "strike"]
+        }
+      },
       form: {
         title: "",
         main: "",

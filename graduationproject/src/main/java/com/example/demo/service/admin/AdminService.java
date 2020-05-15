@@ -581,4 +581,8 @@ public class AdminService {
         return adminMapper.changePassword(user_id, passwordEncode);
 
     }
+
+    public boolean changeCoursePictureById(int id, String path) {
+        return adminMapper.changeCoursePictureById(id, path);
+    }
 }

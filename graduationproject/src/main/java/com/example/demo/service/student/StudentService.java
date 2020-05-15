@@ -6,6 +6,7 @@ import com.example.demo.bean.Homework;
 import com.example.demo.bean.Major;
 import com.example.demo.mapper.student.StudentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,6 +42,7 @@ public class StudentService {
         return studentMapper.getExaminationInfoAndState(studentID, courseID);
     }
 
+    @Async("taskExecutor")
     public boolean SubmitCode(String answerStudent, String studentID, int examinationID) {
 
         boolean flag = studentMapper.SubmitCode(answerStudent, studentID, examinationID);

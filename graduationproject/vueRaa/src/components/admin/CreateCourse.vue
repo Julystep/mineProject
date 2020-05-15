@@ -53,6 +53,17 @@
       </el-col>
       <el-col :span="4">
         <el-button
+          :type="uploadPictureType"
+          @click="uploadPicture"
+          style="width: 100%"
+          size="mini"
+          :disabled="show"
+          >{{ uploadPictureText }}</el-button
+        >
+      </el-col>
+
+      <el-col :span="4">
+        <el-button
           :type="deleteType"
           @click="deleteCourse"
           style="width: 100%"
@@ -90,6 +101,24 @@
     </el-dialog>
     <el-dialog
       title="提示"
+      :visible.sync="uploadPictureDialog"
+      :close-on-click-modal="false"
+    >
+      <el-upload
+        class="avatar-uploader"
+        action="/admin/uploadPicture"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+        :on-error="handleAvatarError"
+        :data="fileData"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+    </el-dialog>
+    <el-dialog
+      title="提示"
       :visible.sync="insertCourseDialog"
       :close-on-click-modal="false"
     >
@@ -119,7 +148,7 @@
           :rules="rules1"
         >
           <el-input v-model="label.value" style="width: 65%"></el-input>
-          <el-button @click="addCourse">新增年级名</el-button>
+          <el-button @click="addCourse">新增课程名</el-button>
           <el-button @click.prevent="removeCourse(label)">删除</el-button>
         </el-form-item>
         <el-form-item>
@@ -211,6 +240,7 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      imageUrl: "",
       options: [],
       defaultProps: {
         children: "childrencourse",
@@ -220,16 +250,19 @@ export default {
       deleteType: "",
       submitType: "",
       checkType: "",
+      uploadPictureType: "",
       show: true,
       data: {},
       confirmText: "等待操作",
       deleteText: "等待操作",
       submitText: "等待操作",
       checkText: "等待操作",
+      uploadPictureText: "等待操作",
       changeCourseDialog: false,
       insertCourseDialog: false,
       submitclassandteacherDialog: false,
       checkclassandteacherDialog: false,
+      uploadPictureDialog: false,
       mgcBeans: [],
       teacher: "",
       form: {
@@ -293,10 +326,36 @@ export default {
         ]
       },
       majors: [],
-      teachers: []
+      teachers: [],
+      fileData: { id: "", name: "" }
     };
   },
   methods: {
+    handleAvatarError() {
+      this.$message({
+        message: "图片上传失败",
+        type: error
+      });
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+      this.$message({
+        message: "图片上传成功",
+        type: success
+      });
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
     showcheckdialog() {
       this.checkclassandteacherDialog = true;
       this.getRequest(
@@ -337,21 +396,30 @@ export default {
         this.deleteText = "等待操作";
         this.submitText = "等待操作";
         this.checkText = "等待操作";
+        this.uploadPictureText = "等待操作";
       } else {
         this.changeType = "success";
         this.deleteType = "danger";
         this.submitType = "primary";
         this.checkType = "warning";
+        this.uploadPictureType = "info";
         this.confirmText = "修改课程名称";
         this.submitText = "添加关联班级和教师";
         this.checkText = "查看关联班级和教师";
         this.deleteText = "删除课程";
+        this.uploadPictureText = "上传课程图片";
         this.show = false;
         this.data = data;
+        console.log(this.data);
       }
     },
     changeCourse() {
       this.changeCourseDialog = true;
+    },
+    uploadPicture() {
+      this.fileData.id = this.data.value;
+      this.fileData.name = this.data.label;
+      this.uploadPictureDialog = true;
     },
     insertCourse() {
       this.insertCourseDialog = true;

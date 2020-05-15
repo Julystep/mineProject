@@ -2,6 +2,7 @@ package com.example.demo.controller.onlinetest;
 
 import com.example.demo.execute.StringSourceCompiler;
 import com.example.demo.service.onlinetest.OnlineTestService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,7 @@ public class OnlineTestController {
     @Resource
     OnlineTestService onlineTestService;
 
+    @Async("taskExecutor1")
     @RequestMapping(value = "/submit/code", method = RequestMethod.POST)
     public Map<String, String> getCode(@RequestParam("code") String code, @RequestParam("param") String param){
         //输出code
@@ -31,6 +33,7 @@ public class OnlineTestController {
         return runResultMap;
     }
 
+    @Async("taskExecutor2")
     @RequestMapping("/downloadcode")
     public String downloadcode(@RequestParam("code") String code,
                                HttpServletRequest request,

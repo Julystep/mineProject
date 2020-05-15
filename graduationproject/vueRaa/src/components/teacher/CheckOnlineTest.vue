@@ -15,10 +15,7 @@
               :offset="3"
               class="el-col"
               ><el-card :body-style="{ padding: '0px' }">
-                <img
-                  src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                  class="image"
-                />
+                <img :src="item.course_picture" class="image" />
                 <div style="padding: 14px;">
                   <span>{{ item.course_name }}</span>
                   <div class="bottom clearfix">

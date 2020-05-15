@@ -40,12 +40,7 @@
               size="mini"
               placeholder="请输入题目名称"
             ></el-input>
-            <el-input
-              v-model="m.main"
-              size="mini"
-              type="textarea"
-              placeholder="请输入题目详述"
-            >
+            <quill-editor ref="text" v-model="m.main" placeholder="请输入内容" class="myQuillEditor" :options="editorOption" />
             </el-input>
             <el-form-item
               label="总分"
@@ -114,7 +109,15 @@
   </div>
 </template>
 <script>
+import { quillEditor } from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
 export default {
+  components: {
+    quillEditor
+  },
   data() {
     //自定义表单验证规则
     var checkQuestion = (rule, value, callback) => {
@@ -156,6 +159,11 @@ export default {
       }
     };
     return {
+      editorOption: {
+          modules:{
+            toolbar: ['bold', 'italic', 'underline', 'strike'],
+          }
+      },
       form: {
         title: "",
         teacherID: this.$store.state.user.user_id,

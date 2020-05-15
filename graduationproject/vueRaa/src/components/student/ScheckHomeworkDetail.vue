@@ -154,8 +154,7 @@
       </el-alert>
     </el-dialog>
     <el-dialog :visible.sync="contentDialog">
-      <el-alert :title="contentDialogContent" type="info" :closable="false">
-      </el-alert>
+      <p style="text-align: left" v-html="contentDialogContent"></p>
     </el-dialog>
   </div>
 </template>

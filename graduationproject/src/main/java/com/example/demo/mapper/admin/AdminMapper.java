@@ -124,4 +124,6 @@ public interface AdminMapper {
     boolean deleteCourseTeacherConnect(int course_id);
 
     boolean changePassword(String user_id, String passwordEncode);
+
+    boolean changeCoursePictureById(int id, String path);
 }

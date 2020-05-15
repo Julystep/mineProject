@@ -5,21 +5,33 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.bean.*;
 import com.example.demo.common.PoiUtils;
+import com.example.demo.common.UserUtils;
 import com.example.demo.service.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
+
+    @Value("${file.rootPath}")
+    private String ROOT_PATH;
+    //图片存放根目录下的子目录
+    @Value("${file.sonPath2}")
+    private String SON_PATH;
 
     @Autowired
     AdminService adminService;
@@ -321,6 +333,72 @@ public class AdminController {
             return RespBean.error("修改失败");
         }
 
+    }
+
+    @RequestMapping(value = "/uploadPicture", method = RequestMethod.POST)
+    public RespBean userfaceUpload(int id, String name, MultipartFile file) throws IOException {
+        if(file.isEmpty()){
+            return RespBean.error("文件为空");
+        }
+        /*File fileDir = new File(ROOT_PATH + SON_PATH);
+        if(!fileDir.exists()){
+            fileDir.mkdir();
+        }*/
+
+        String fileName = file.getOriginalFilename();
+        String suffixName  = fileName.substring(fileName.lastIndexOf("."));
+        fileName = UUID.randomUUID() + suffixName;   //新文件名
+        String majorDir = id + name;
+        File dest = new File(ROOT_PATH + SON_PATH + majorDir + '/'+  fileName);
+        System.out.println("================================================" + dest.getParentFile());
+        if (!dest.getParentFile().exists()) {
+            dest.getParentFile().mkdirs();
+        }
+        /*String[] children = dest.getParentFile().list();
+        for(String child : children){
+            File file1 = new File(dest.getParentFile() + child);
+            file1.delete();
+        }*/
+        deleteDirectory(dest.getParentFile());
+        file.transferTo(dest);
+
+        String path = SON_PATH  + majorDir + '/' + fileName;
+        boolean result = adminService.changeCoursePictureById(id, path);
+        /*File toFile = null;
+        InputStream ins = null;
+        ins = file.getInputStream();
+        toFile = new File(file.getOriginalFilename());
+        inputStreamToFile(ins, toFile);
+        ins.close();
+        File file1 = new File(ROOT_PATH + SON_PATH + "\\" + file.getOriginalFilename());
+        FileInputStream is = new FileInputStream(toFile);
+        FileChannel ifile = is.getChannel();
+        FileOutputStream os = new FileOutputStream(file1);
+        FileChannel ofile = os.getChannel();
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        while (ifile.read(buffer) != -1) {//将物品从库存读入到缓冲器（大卡车）
+            buffer.flip();
+            ofile.write(buffer);//将缓冲器（大卡车）的物品，写出到目的地。
+            buffer.clear();
+
+        }*/
+        if(result) {
+            return RespBean.ok("头像上传成功");
+        }else{
+            return RespBean.error("头像上传失败");
+        }
+    }
+    private static void deleteDirectory(File file) {
+        if (file.isFile()) {// 表示该文件不是文件夹
+            file.delete();
+        } else {
+            // 首先得到当前的路径
+            String[] childFilePaths = file.list();
+            for (String childFilePath : childFilePaths) {
+                File childFile = new File(file.getAbsolutePath() + "/" + childFilePath);
+                deleteDirectory(childFile);
+            }
+        }
     }
 
 

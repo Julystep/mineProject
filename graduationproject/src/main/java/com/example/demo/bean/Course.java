@@ -5,9 +5,19 @@ public class Course {
     private int course_id;
     private String course_name;
     private String course_avator;
+    private String course_picture;
     private int major_id;
     private String value;
     private String label;
+
+
+    public String getCourse_picture() {
+        return course_picture;
+    }
+
+    public void setCourse_picture(String course_picture) {
+        this.course_picture = course_picture;
+    }
 
     public int getMajor_id() {
         return major_id;

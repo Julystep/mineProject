@@ -293,18 +293,22 @@
         >
       </template>
     </el-dialog>
-    <el-dialog :visible.sync="mainDialog" :close-on-click-modal="false">
+    <el-dialog
+      :visible.sync="mainDialog"
+      :close-on-click-modal="false"
+      @close="closemainDialog"
+    >
       <template v-if="this.mainFlag === false">
-        <el-tag type="success" style="margin-bottom:10px">{{
-          mainContent
-        }}</el-tag>
+        <main>
+          <span style="text-align:left" v-html="mainContent"></span>
+        </main>
       </template>
       <template v-if="this.mainFlag === true">
-        <el-input
-          size="mini"
+        <quill-editor
+          ref="text"
           v-model="mainContent"
-          type="textarea"
-          style="margin-bottom:10px"
+          class="myQuillEditor"
+          :options="editorOption"
         />
       </template>
       <template v-if="this.mainFlag === false">
@@ -517,11 +521,20 @@
 </template>
 <script>
 import pdf from "vue-pdf";
+import { quillEditor } from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 export default {
-  components: { pdf },
+  components: { pdf, quillEditor },
   inject: ["reload"],
   data() {
     return {
+      editorOption: {
+        modules: {
+          toolbar: ["bold", "italic", "underline", "strike"]
+        }
+      },
       homework: "",
       props: { multiple: true },
       homeworkStudentInfo: [],
@@ -583,6 +596,9 @@ export default {
     this.getHomeworkInfoByTeacherIdAndCourseId();
   },
   methods: {
+    closemainDialog() {
+      this.mainFlag = false;
+    },
     exportInfo(children) {
       /* 显示导出学生信息的页面 */
       this.exportDialog = true;

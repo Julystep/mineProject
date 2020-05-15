@@ -233,7 +233,7 @@
     </select>
 
     <select id="getAllCourse" resultMap="CourseMap">
-        select m.major_id, m.major_name, c.course_id, c.course_name
+        select m.major_id, m.major_name, c.course_id, c.course_name, c.course_picture
         from major m left join course c on m.major_id=c.major_id
         where m.major_id in
         <foreach collection="list" item="item" separator ="," index="index" open="(" close=")">
@@ -395,6 +395,9 @@
 
     <update id="changePassword">
         update user set password=#{passwordEncode} where user_id=#{user_id}
+    </update>
+    <update id="changeCoursePictureById">
+        update course set course_picture=#{path} where course_id=#{id}
     </update>
 
 
