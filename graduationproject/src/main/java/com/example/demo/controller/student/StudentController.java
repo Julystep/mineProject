@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,6 +74,7 @@ public class StudentController {
         }
 
         deleteDirectory(dest.getParentFile());
+        deleteDirectory(destpdf.getParentFile());
         file.transferTo(dest);
 
         //转化成pdf存储
@@ -88,6 +90,13 @@ public class StudentController {
         }else{
             return RespBean.error("作业上传失败");
         }
+    }
+
+    @RequestMapping(value = "/downloadyourwork", method = RequestMethod.POST)
+    public Object downloadFile(@RequestParam("formData") String formData) throws IOException {
+
+        return studentService.downloadFile(formData);
+
     }
 
     @RequestMapping(value = "/submitCode", method = RequestMethod.POST)

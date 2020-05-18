@@ -32,7 +32,13 @@
                   <el-tag type="warning" :closable="false">未提交 </el-tag>
                 </div>
                 <div v-if="scope.row.state === 1">
-                  <el-tag type="success" :closable="false">已提交 </el-tag>
+                  <el-tag
+                    type="success"
+                    @click="downloadyourwork(scope.row)"
+                    style="cursor:pointer"
+                    :closable="false"
+                    >已提交
+                  </el-tag>
                 </div>
               </template>
             </el-table-column>
@@ -185,6 +191,19 @@ export default {
     this.getMajorGradeClassByStudentId();
   },
   methods: {
+    downloadyourwork(row) {
+      var _this = this;
+      this.formFileData.homeworkID = row.id;
+      this.downloadRequest("/student/downloadyourwork", {
+        formData: JSON.stringify(_this.formFileData)
+      }).then(resp => {
+        let blob = new Blob([resp.data], { type: "application/msword" });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.click();
+        link.remove();
+      });
+    },
     onProgress() {
       this.loading = true;
     },
