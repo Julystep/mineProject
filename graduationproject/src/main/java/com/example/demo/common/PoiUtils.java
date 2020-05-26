@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -299,6 +300,39 @@ public class PoiUtils {
 
                         HSSFCell cell = row.getCell(k);
                         switch (cell.getCellTypeEnum()) {
+                            case NUMERIC:{
+                                DecimalFormat df = new DecimalFormat("0");
+                                String cellValue = df.format(cell.getNumericCellValue());
+                                if (cellValue == null) {
+                                    cellValue = "";
+                                }
+                                switch (k) {
+                                    case 0:
+                                        student.setUser_id(cellValue);
+                                        break;
+                                    case 1:
+                                        student.setUsername(cellValue);
+                                        break;
+                                    case 2:
+                                        student.setEmail(cellValue);
+                                        break;
+                                    case 3:
+                                        student.setPhone(cellValue);
+                                        break;
+                                    case 4:
+                                        student.setClass_name(cellValue);
+                                        break;
+                                    case 5:
+                                        student.setGrade_name(cellValue);
+                                        break;
+                                    case 6:
+                                        student.setMajor_name(cellValue);
+                                        break;
+                                    case 7:
+                                        student.setAcademy_name(cellValue);
+                                }
+                                break;
+                            }
                             case STRING: {
                                 String cellValue = cell.getStringCellValue();
                                 if (cellValue == null) {
@@ -370,6 +404,31 @@ public class PoiUtils {
 
                         HSSFCell cell = row.getCell(k);
                         switch (cell.getCellTypeEnum()) {
+                            case NUMERIC:{
+                                DecimalFormat df = new DecimalFormat("0");
+                                String cellValue = df.format(cell.getNumericCellValue());
+                                if (cellValue == null) {
+                                    cellValue = "";
+                                }
+                                switch (k) {
+                                    case 0:
+                                        teacher.setUser_id(cellValue);
+                                        break;
+                                    case 1:
+                                        teacher.setUsername(cellValue);
+                                        break;
+                                    case 2:
+                                        teacher.setEmail(cellValue);
+                                        break;
+                                    case 3:
+                                        teacher.setPhone(cellValue);
+                                        break;
+                                    case 4:
+                                        teacher.setMajor_name(cellValue);
+                                        break;
+                                }
+                                break;
+                            }
                             case STRING: {
                                 String cellValue = cell.getStringCellValue();
                                 if (cellValue == null) {
@@ -392,6 +451,7 @@ public class PoiUtils {
                                         teacher.setMajor_name(cellValue);
                                         break;
                                 }
+
                             }
                             break;
                         }

@@ -24,7 +24,6 @@ public class OnlineTestController {
     @Resource
     OnlineTestService onlineTestService;
 
-    @Async("taskExecutor1")
     @RequestMapping(value = "/submit/code", method = RequestMethod.POST)
     public Map<String, String> getCode(@RequestParam("code") String code, @RequestParam("param") String param){
         //输出code
@@ -33,7 +32,7 @@ public class OnlineTestController {
         return runResultMap;
     }
 
-    @Async("taskExecutor2")
+    /*@Async("taskExecutor2")*/
     @RequestMapping("/downloadcode")
     public String downloadcode(@RequestParam("code") String code,
                                HttpServletRequest request,

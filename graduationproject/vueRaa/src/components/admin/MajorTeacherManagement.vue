@@ -131,6 +131,7 @@
             :total="getInfoCount(index)"
             :currentPage="currentPage"
             @current-change="currentChange"
+            :page-size="20"
           >
           </el-pagination>
         </div>
@@ -326,6 +327,8 @@ export default {
         return;
       }
       this.options = this.$store.state.admin.majorList;
+      this.currentPage = 1;
+      this.getTeacherByMajor();
       /* var _this = this;
       this.postRequest("/admin/getallmajorbymajorlist", {
         majorList: JSON.stringify(_this.$store.state.admin.majorList)

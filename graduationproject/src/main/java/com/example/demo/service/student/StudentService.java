@@ -53,7 +53,7 @@ public class StudentService {
         return studentMapper.getExaminationInfoAndState(studentID, courseID);
     }
 
-    @Async("taskExecutor")
+    /*@Async("taskExecutor")*/
     public boolean SubmitCode(String answerStudent, String studentID, int examinationID) {
 
         boolean flag = studentMapper.SubmitCode(answerStudent, studentID, examinationID);

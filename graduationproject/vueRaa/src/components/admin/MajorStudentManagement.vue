@@ -143,6 +143,7 @@
             :total="getInfoCount(index)"
             :currentPage="currentPage"
             @current-change="currentChange"
+            :page-size="20"
           >
           </el-pagination>
         </div>
@@ -390,6 +391,9 @@ export default {
     getInfoCount(index) {
       var _this = this;
       return this.studentInfo[_this.majorList[index].major_name + "count"];
+      console.log(
+        this.studentInfo[_this.majorList[index].major_name + "count"]
+      );
     },
     getStudentByMajor() {
       /* 根据专业来获取教师 */
@@ -412,12 +416,20 @@ export default {
         return;
       }
 
+      this.currentPage = 1;
+      this.form1.classValue = [];
+      this.getStudentByMajor();
+
       var _this = this;
       this.getRequest(
         "/admin/getclassesbymajorIid?majorID=" +
           _this.majorList[activeName].major_id
       ).then(resp => {
-        _this.options = resp.data;
+        if (resp.data == null) {
+          _this.options = [];
+        } else {
+          _this.options = resp.data;
+        }
       });
     }
   }

@@ -254,6 +254,7 @@
               :total="studentsCount"
               :currentPage="currentPage"
               @current-change="currentChange"
+              :page-size="20"
             >
             </el-pagination>
           </div>

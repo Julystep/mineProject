@@ -131,18 +131,18 @@
           <el-link
             type="success"
             :underline="false"
-            style="font-size: 20px; font-weight: bold"
+            style="font-size: 20px; font-weight: bold; width: 100%"
             >{{ answerStudent.question.title }}</el-link
           >
           <el-link
             type="success"
             :underline="false"
-            style="margin-top: 20px; font-size: 16px; text-align: left"
-            >{{ answerStudent.question.main }}</el-link
-          >
+            style="margin-top: 20px; font-size: 16px; text-align: left; width:100%"
+            v-html="answerStudent.question.main"
+          ></el-link>
           <el-tag
             type="warning"
-            style="margin-top: 50px; font-size: 20px; font-weight: bold;"
+            style="margin-top: 50px; font-size: 20px; font-weight: bold; width: 100%"
             >考试结束时间{{
               examinationStudent.edate | formatDateAndTime
             }}</el-tag
@@ -151,7 +151,7 @@
             <el-col :span="3"><el-tag type="info">倒计时:</el-tag></el-col>
             <el-col :span="15"
               ><el-tag type="info"
-                >{{ hourNum }}h - {{ minuteNum }}m - {{ secondNum }}s
+                >{{ hourNum }} - {{ minuteNum }} - {{ secondNum }}
               </el-tag></el-col
             >
           </el-row>
@@ -182,6 +182,7 @@
 import codemirror from "../codemirror/codemirror";
 import moment from "../../../node_modules/moment";
 export default {
+  inject: ["reload"],
   components: {
     codemirror: codemirror
   },
@@ -281,6 +282,7 @@ export default {
             examinationID: _this.examinationID
           }).then(resp => {
             this.codeDrawerVisible = false;
+            _this.reload();
             this.countDown(
               this.examinationStudent.sdate,
               this.examinationStudent.edate
@@ -301,6 +303,7 @@ export default {
         examinationID: _this.examinationID
       }).then(resp => {
         this.codeDrawerVisible = false;
+        _this.reload();
         this.countDown(
           this.examinationStudent.sdate,
           this.examinationStudent.edate

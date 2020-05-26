@@ -26,7 +26,6 @@ axios.interceptors.response.use(data => {
     Message.success({
       message: data.data.msg
     });
-    console.log(data);
     if (data.data.redirect) {
       router.push("/");
     }
